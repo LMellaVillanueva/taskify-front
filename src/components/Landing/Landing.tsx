@@ -2,14 +2,37 @@ import NavBar from "../navBar/NavBar";
 import taskify1 from "../../assets/taskify1.png";
 import Footer from "../Footer/Footer";
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 const Landing = () => {
+
+  const [darkMode, setDarkMode] = useState(
+    // Si Theme es 'dark', darkMode será true
+    localStorage.getItem("Theme") === "dark"
+  );
+
+  const handleMode = () => {
+    // Al principio actualiza al estado en true
+    setDarkMode(!darkMode);
+  };
+
+  useEffect(() => {
+    if (darkMode) {
+      document.body.classList.add("dark");
+      localStorage.setItem("Theme", "dark");
+    } else {
+      document.body.classList.remove("dark");
+      localStorage.setItem("Theme", "light");
+    }
+  }, [darkMode]);
+
   return (
     <>
       <NavBar />
       <main
-        className={`lg:p-10 flex flex-col justify-start gap-20 md:gap-16 pt-20 md:pt-52 px-5 lg:pt-72 h-screen`}
+        className={`lg:p-10 flex flex-col justify-start gap-20 md:gap-16 pt-20 md:pt-52 px-5 lg:pt-72 dark:bg-neutral-900`}
       >
+        <button onClick={handleMode}>Dark Mode</button>
         <article
           className={`flex flex-col md:flex-row justify-center gap-10 items-center py-10 md:py-48 lg:pb-32 lg:pt-0`}
         >
@@ -23,7 +46,7 @@ const Landing = () => {
               ordenar tu día, semana e incluso tu mes! Gracias al modelo
               productivo y organizacional de su <b></b>
               <span className="underline cursor-pointer">
-                Creación de Tareas.
+                <Link to={"/workSpace"}>Creación de Tareas.</Link>
               </span>
             </p>
           </div>
@@ -105,8 +128,8 @@ const Landing = () => {
             siempre podrás estar al tanto del siguiente compromiso por cumplir.
           </p>
         </article>
-        <Footer />
       </main>
+      <Footer />
     </>
   );
 };
