@@ -52,19 +52,19 @@ const Trash = () => {
       <NavBar />
       {mediumScreen ? (
         <>
-          <main className="pt-28 md:pt-52 flex flex-col items-center gap-24">
+          <main className="pt-28 md:pt-52 flex flex-col items-center gap-24 dark:bg-neutral-900 dark:text-white">
             <h1 className="text-center">Tareas Completadas</h1>
             <input type="text" placeholder="Buscar tarea..." className="w-72" />
             <section className="w-5/6">
               {tasksDeleted?.map((task) => (
                 <article
                   key={task.id}
-                  className="border border-white rounded-xl p-5 flex flex-col items-center gap-5 mb-5"
+                  className="border border-black dark:border-white rounded-xl p-5 flex flex-col items-center gap-5 mb-5"
                 >
                   <p>{task.description}</p>
-                  <div className="border border-white w-1/2"></div>
+                  <div className="border border-black dark:border-white rounded-xl w-1/2"></div>
                   <p>Importancia: {task.important}</p>
-                  <div className="border border-white w-1/3"></div>
+                  <div className="border border-black dark:border-white rounded-xl w-1/3"></div>
                   <p>
                     {new Date(task?.date).toLocaleString("es-ES", {
                       year: "numeric",
@@ -84,7 +84,7 @@ const Trash = () => {
         </>
       ) : (
         <>
-          <main className="pt-40 flex flex-col gap-20 pb-10">
+          <main className="pt-40 flex flex-col gap-20 pb-10 dark:bg-neutral-900 dark:text-white">
             <header className="flex justify-evenly">
               <Link to={'/workSpace'}>
                 Back
@@ -101,13 +101,13 @@ const Trash = () => {
               {tasksDeleted?.map((task) => (
                 <section
                   key={task.id}
-                  className="border border-white rounded-xl p-8 flex items-center justify-evenly gap-3 mb-5"
+                  className="border border-black dark:border-white rounded-xl p-8 flex items-center justify-evenly gap-3 mb-5"
                 >
-                  <p className="border border-white rounded-lg w-5/6 h-36 p-5 text-wrap">{task.description}</p>
+                  <p className="border border-black dark:border-white rounded-xl w-5/6 h-36 p-5 text-wrap">{task.description}</p>
 
                   <div className="flex flex-col mx-10 items-center gap-3 text-center">
                   <p>Importancia: {task.important}</p>
-                  <div className="border border-white w-full"></div>
+                  <div className="border border-black dark:border-white rounded-xl w-full"></div>
                   <p>
                     {new Date(task?.date).toLocaleString("es-ES", {
                         year: "numeric",

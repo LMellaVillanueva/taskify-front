@@ -6,7 +6,24 @@ export default {
   ],
   "darkMode": "class",
   theme: {
-    extend: {},
+    extend: {
+      keyframes: {
+        slideFromRight: {
+          'from': { transform: 'translateX(100%)', opacity: 0 },
+          'to': { transform: 'translateX(0)', opacity: 1 },
+        },
+        outFromRight: {
+          'from': { opacity: 1 },
+          'to': { opacity: 0 },
+        },
+      },
+      animation: {
+        slideFromRight: 'slideFromRight 0.5s ease',
+        outFromRight: 'outFromRight 1s ease',
+      }
+    },
   },
-  plugins: [],
+  plugins: [
+    require('tailwindcss-animated')
+  ],
 }

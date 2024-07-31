@@ -13,4 +13,12 @@ export interface Task {
     elim: boolean
 }
 
+export interface User {
+    name: string
+    email: string
+    password: string
+    admin?: boolean
+}
+
 export type TasksList = Task[];
+export type UsersList = User[];
