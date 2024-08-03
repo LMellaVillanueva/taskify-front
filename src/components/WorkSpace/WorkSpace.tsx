@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import NavBar from "../navBar/NavBar";
 import axiosURL from "../../axiosConfig/axiosURL";
 import { Important, Task } from "../../types";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
-import { getTasksAPI } from "../../redux/slices/Tasks/taskSlice";
+import { getTasksAPI, searchATask } from "../../redux/slices/Tasks/taskSlice";
 import { Link } from "react-router-dom";
 import { Calendar, dayjsLocalizer } from "react-big-calendar";
 import dayjs from "dayjs";
@@ -16,9 +16,7 @@ const WorkSpace = () => {
   const allTasks = useAppSelector((state) => state.Task.allTasks);
   const tasksElimFalse = allTasks.filter((task) => task.elim === false);
   const urgencyTask = tasksElimFalse.filter((task) => task.urgency === true);
-  const importantTasks = tasksElimFalse.filter(
-    (task) => task.urgency === false
-  );
+  const importantTasks = tasksElimFalse.filter((task) => task.urgency === false);
 
   const [calendarOpen, setCalendarOpen] = useState(false);
   const localizer = dayjsLocalizer(dayjs);
@@ -35,8 +33,6 @@ const WorkSpace = () => {
   useEffect(() => {
     dispatch(getTasksAPI());
   }, []);
-
-  console.log(urgencyTask);
 
   const updateUrgency = async (id: number): Promise<void> => {
     try {
@@ -103,8 +99,17 @@ const WorkSpace = () => {
     }
   };
 
+  const handleSearch = async (event: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+    let description = event.target.value;
+      if (description.length) {
+        await dispatch(searchATask(description.toUpperCase()));
+      } else {
+        await dispatch(getTasksAPI());
+      }
+  }
+
   return (
-    <>
+    <React.Fragment>
       <NavBar />
       <main
         className={`pt-28 md:pt-52 px-5 lg:pt-40 flex flex-col lg:flex-row w-full justify-around items-center lg:items-baseline overflow-hidden gap-16 lg:gap-0 dark:bg-neutral-900 text-black dark:text-white`}
@@ -122,7 +127,7 @@ const WorkSpace = () => {
               rows={3}
               value={task.description}
               onChange={handleDescription}
-              className="w-4/5 md:w-full border border-black dark:border-white rounded-xl"
+              className="w-4/5 md:w-full border border-black dark:border-white rounded-xl text-black p-1"
             ></textarea>
             <div className="flex justify-evenly gap-10 md:gap-0 md:w-full">
               <button onClick={handleUrgency} name="urgency">
@@ -173,9 +178,11 @@ const WorkSpace = () => {
 
         <section>
           <input
+          onChange={handleSearch}
             type="text"
             placeholder="Buscar tarea..."
             style={{ width: "300px" }}
+            className="rounded-xl p-1 text-black"
           />
         </section>
 
@@ -237,7 +244,7 @@ const WorkSpace = () => {
         </section>
       </main>
       <Footer />
-    </>
+    </React.Fragment>
   );
 };
 export default WorkSpace;

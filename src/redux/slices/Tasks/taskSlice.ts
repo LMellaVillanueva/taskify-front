@@ -5,11 +5,13 @@ import { AppDispatch } from "../../store";
 
 interface Tasks {
   allTasks: TasksList;
+  searchTasks: TasksList;
   tasksDeleted: TasksList;
 }
 
 const initialState: Tasks = {
   allTasks: [],
+  searchTasks: [],
   tasksDeleted: [],
 };
 
@@ -19,9 +21,15 @@ export const TaskSlice = createSlice({
   reducers: {
     getTasks: (state, action) => {
       state.allTasks = [...action.payload];
+      state.searchTasks = [...action.payload];
     },
     getTasksDeleted: (state, action) => {
       state.tasksDeleted = [...action.payload]
+    },
+    searchTasks: (state, action) => {
+      state.allTasks = state.searchTasks.filter((task) => {
+        return task.description.toUpperCase().startsWith(action.payload);
+      })
     },
   },
 });
@@ -52,5 +60,11 @@ export const getTasksDeletedAPI = () => async (dispatch: AppDispatch) => {
   }
 };
 
+export const searchATask = (task: string) => async (dispatch: AppDispatch) => {
+    if (task) {
+      dispatch(searchTasks(task));
+    }
+}
+
 export default TaskSlice.reducer;
-export const { getTasks, getTasksDeleted } = TaskSlice.actions;
+export const { getTasks, getTasksDeleted, searchTasks } = TaskSlice.actions;

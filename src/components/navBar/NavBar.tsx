@@ -5,16 +5,12 @@ import axiosURL from "../../axiosConfig/axiosURL";
 import Swal from "sweetalert2";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { logInUser, logOutUser } from "../../redux/slices/Users/userSlice";
+import DarkMode from "../DarkMode/DarkMode";
+import BurguerMenu from "../BurguerMenu/BurguerMenu";
 
 const NavBar = () => {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.User.user);
-  console.log(user);
-
-  const [darkMode, setDarkMode] = useState(
-    // Si Theme es 'dark', darkMode será true
-    localStorage.getItem("Theme") === "dark"
-  );
 
   //Creación de cuentas
   const [userInfo, setUserInfo] = useState({
@@ -22,10 +18,6 @@ const NavBar = () => {
     password: "",
   });
 
-  const handleMode = () => {
-    // Al principio actualiza al estado en true
-    setDarkMode(!darkMode);
-  };
   const [mediumScreen, setMediumScreen] = useState(window.innerWidth <= 1024);
 
   useEffect(() => {
@@ -40,18 +32,6 @@ const NavBar = () => {
     };
   }, []);
 
-  //Tema del OS
-  // window.matchMedia("(prefers-color-scheme: dark)").matches
-  useEffect(() => {
-    if (darkMode) {
-      document.body.classList.add("dark");
-      localStorage.setItem("Theme", "dark");
-    } else {
-      document.body.classList.remove("dark");
-      localStorage.setItem("Theme", "light");
-    }
-  }, [darkMode]);
-
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUserInfo({
       ...userInfo,
@@ -63,7 +43,10 @@ const NavBar = () => {
     try {
       event.preventDefault();
       const { data } = await axiosURL.post("/user/login", userInfo);
-      const userLocaleStorage = {name: data.user.name, email: data.user.email}
+      const userLocaleStorage = {
+        name: data.user.name,
+        email: data.user.email,
+      };
       if (data) {
         dispatch(logOutUser());
         window.localStorage.setItem("User", JSON.stringify(userLocaleStorage));
@@ -109,7 +92,9 @@ const NavBar = () => {
             alt="logoTaskify"
             className="w-6/12 rounded-full m-auto"
           />
-          <p className="text-black dark:text-white">La armonía de tu desorden</p>
+          <p className="text-black dark:text-white">
+            La armonía de tu desorden
+          </p>
         </header>
         <ul
           className={`hidden md:flex items-center justify-center gap-4 lg:w-1/2 lg:justify-evenly lg:gap-0`}
@@ -120,24 +105,26 @@ const NavBar = () => {
               alt="logoTaskify"
               className="w-1/2 md:w-1/3 lg:w-20 rounded-full m-auto"
             />
-            <p className="text-center text-black dark:text-white">La armonía de tu desorden</p>
+            <p className="text-center text-black dark:text-white">
+              La armonía de tu desorden
+            </p>
           </header>
-          <li>
+          <li className="hover:underline">
             <Link to={"/"}>Inicio</Link>
           </li>
-          <li>
+          <li className="hover:underline">
             <Link to={"/workSpace"}>Creación</Link>
           </li>
           <li>
-            <button onClick={handleScroll}>Ayuda</button>
+            <button onClick={handleScroll} className="border-none hover:underline">Ayuda</button>
           </li>
         </ul>
-        <button
-          onClick={handleMode}
-          className="bg-slate-600 p-2 rounded-xl text-white m-2"
-        >
-          Dark Mode
-        </button>
+
+        <div className="hidden md:block">
+          <DarkMode />
+        </div>
+
+        <BurguerMenu />
 
         {!user.length ? (
           mediumScreen ? (
@@ -214,7 +201,9 @@ const NavBar = () => {
           )
         ) : (
           <section className="flex items-center justify-around p-1 w-1/2 md:w-full gap-4 md:gap-10 lg:w-1/5">
-            <h2 className="text-xs md:text-sm w-full lg:text-xl text-center">Bienvenido/a de nuevo {user[0].name}!</h2>
+            <h2 className="text-xs md:text-sm w-full lg:text-xl text-center">
+              Bienvenido/a de nuevo {user[0].name}!
+            </h2>
             <button onClick={handleLogOut}>Cerrar Sesión</button>
           </section>
         )}

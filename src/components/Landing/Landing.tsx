@@ -7,7 +7,7 @@ const Landing = () => {
   return (
     <>
       <NavBar />
-      <main
+      <main id="intro" 
         className={`lg:p-10 flex flex-col justify-start gap-20 md:gap-16 pt-20 md:pt-52 px-5 lg:pt-72 dark:bg-neutral-900 text-black dark:text-white`}
       >
         <article
@@ -72,7 +72,7 @@ const Landing = () => {
           <img src={taskify1} alt="image2" className={`md:w-10/12 lg:w-5/12`} />
         </article>
 
-        <article
+        <article id="fnUrgency"
           className={`text-center flex flex-col items-center gap-16 py-16`}
         >
           <img src={taskify1} alt="image3" className={`w-96 lg:w-4/12`} />
@@ -91,7 +91,7 @@ const Landing = () => {
           </header>
         </article>
 
-        <article className={`text-center lg:w-2/3 m-auto py-5 md:py-10`}>
+        <article id="solution" className={`text-center lg:w-2/3 m-auto py-5 mt-14 mb-32 md:py-10`}>
           <h1 className="text-4xl md:text-5xl pb-10">
             ¿Qué problemas soluciona Taskify?
           </h1>
