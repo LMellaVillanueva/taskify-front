@@ -148,13 +148,12 @@ const NavBar = () => {
                   value={userInfo.password}
                 />
               </div>
-              <div>
+              <div className="text-center">
                 <button type="submit" className="p-2">
                   Iniciar sesión
                 </button>
                 <Link to={"/crearCuenta"}>
                   <span className="underline cursor-pointer">
-                    {" "}
                     Crear cuenta
                   </span>
                 </Link>
@@ -188,10 +187,9 @@ const NavBar = () => {
                   Iniciar sesión
                 </button>
                 <p className="text-sm">
-                  ¿No tienes una cuenta?
+                  ¿No tienes una cuenta? <b></b>
                   <Link to={"/crearCuenta"}>
                     <span className="underline cursor-pointer">
-                      {" "}
                       Crea una aquí
                     </span>
                   </Link>

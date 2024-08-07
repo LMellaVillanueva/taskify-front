@@ -11,6 +11,7 @@ export interface Task {
     important: Important
     date: Date
     elim: boolean
+    color: string
 }
 
 export interface User {
