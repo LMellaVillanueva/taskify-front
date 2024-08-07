@@ -57,6 +57,7 @@ const WorkSpace = () => {
       ...task,
       description: event.target.value,
     });
+    setDescriptionNotCreated(event.target.value);
   };
 
   // any para manejar funciones desde un button y un select
@@ -126,6 +127,7 @@ const WorkSpace = () => {
       await dispatch(searchATask(description.toUpperCase()));
     } else {
       await dispatch(getTasksAPI());
+      // description = '';
     }
   };
 
@@ -241,10 +243,11 @@ const WorkSpace = () => {
         <section className="flex flex-col gap-10">
           <input
             onChange={handleSearch}
+            value={descriptionNotCreated}
             type="text"
             placeholder="Buscar tarea..."
             style={{ width: "300px" }}
-            className="rounded-xl p-1 text-black"
+            className="rounded-xl p-1 text-black border border-black"
           />
           {descriptionNotCreated.length > 0 && importantTasks.length <= 0 && (
             <form
@@ -257,15 +260,16 @@ const WorkSpace = () => {
                 placeholder={descriptionNotCreated}
                 className="text-black"
                 onChange={handleDescription}
+                value={descriptionNotCreated}
               />
               <button onClick={handleUrgency}>Urgencia</button>
               <select
                 name="important"
                 id=""
-                className="text-white dark:text-black"
+                className="text-black dark:text-white"
                 onClick={handleImportancy}
               >
-                <option value="">Importancia</option>
+                <option value={Important.HIGH}>Importancia</option>
                 <option value={Important.HIGH}>HIGH</option>
                 <option value={Important.MEDIUM}>MEDIUM</option>
                 <option value={Important.LOW}>LOW</option>
