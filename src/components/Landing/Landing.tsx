@@ -8,7 +8,7 @@ const Landing = () => {
     <>
       <NavBar />
       <main id="intro" 
-        className={`lg:p-10 flex flex-col justify-start gap-20 md:gap-16 pt-20 md:pt-52 px-5 lg:pt-72 dark:bg-neutral-900 text-black dark:text-white`}
+        className={`lg:p-10 flex flex-col justify-start gap-20 md:gap-16 pt-64 md:pt-52 px-5 lg:pt-72 dark:bg-neutral-900 text-black dark:text-white bg-gradient-to-bl from-white via-violet-300 to-purple-600 dark:bg-gradient-to-br dark:from-neutral-700 dark:via-black dark:to-violet-950`}
       >
         <article
           className={`flex flex-col md:flex-row justify-center gap-10 items-center py-10 md:py-48 lg:pb-32 lg:pt-0`}

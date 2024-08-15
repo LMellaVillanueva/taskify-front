@@ -22,6 +22,9 @@ export default {
         outFromRight: 'outFromRight 1s ease',
       }
     },
+    fontFamily: {
+      'serif': ["Play", 'sans-serif']
+    }
   },
   plugins: [
     require('tailwindcss-animated')

@@ -12,6 +12,7 @@ export interface Task {
     date: Date
     elim: boolean
     color: string
+    reminder: Date
 }
 
 export interface User {

@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import LightModeIcon from '@mui/icons-material/LightMode';
 
 const DarkMode = () => {
   const [darkMode, setDarkMode] = useState(
@@ -27,8 +29,9 @@ const DarkMode = () => {
     <React.Fragment>
       <button
         onClick={handleMode}
-        className="bg-slate-600 p-2 rounded-xl text-white m-2">
-        Dark Mode
+        className="border-none"
+        >
+          {darkMode ? <DarkModeIcon fontSize="large" className="animate-fade-left"/> : <LightModeIcon fontSize="large" className="animate-jump-in"/>}
       </button>
     </React.Fragment>
   );

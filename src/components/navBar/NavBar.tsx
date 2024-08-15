@@ -84,20 +84,20 @@ const NavBar = () => {
   return (
     <>
       <nav
-        className={`md:absolute inset-0 h-32 flex justify-between lg:justify-around md:border-2 border-teal-300 rounded-2xl p-5 m-1 bg-purple-600 dark:bg-purple-300 text-white dark:text-black`}
+        className={`absolute font-serif lg:text-lg inset-0 h-32 flex md:justify-between lg:justify-around rounded-b-3xl lg:rounded-b-full p-5 bg-gradient-to-br from-violet-700 via-purple-500 to-indigo-400 dark:text-white text-dark dark:bg-gradient-to-bl dark:from-violet-950 dark:to-purple-700`}
       >
+        {/* Vista de calular */}
         <header className={`md:hidden m-auto text-center`}>
           <img
             src={logo}
             alt="logoTaskify"
-            className="w-6/12 rounded-full m-auto"
+            width={170}
+            className="rounded-full m-auto ml-12"
           />
-          <p className="text-black dark:text-white">
-            La armonía de tu desorden
-          </p>
+          <p className="ml-10">La armonía de tu desorden</p>
         </header>
         <ul
-          className={`hidden md:flex items-center justify-center gap-4 lg:w-1/2 lg:justify-evenly lg:gap-0`}
+          className={`hidden md:flex items-center justify-center gap-6 lg:w-1/2 lg:justify-evenly lg:gap-0 md:text-lg lg:text-xl`}
         >
           <header>
             <img
@@ -105,7 +105,7 @@ const NavBar = () => {
               alt="logoTaskify"
               className="w-1/2 md:w-1/3 lg:w-20 rounded-full m-auto"
             />
-            <p className="text-center text-black dark:text-white">
+            <p className="text-center md:text-base">
               La armonía de tu desorden
             </p>
           </header>
@@ -116,21 +116,24 @@ const NavBar = () => {
             <Link to={"/workSpace"}>Creación</Link>
           </li>
           <li>
-            <button onClick={handleScroll} className="border-none hover:underline">Ayuda</button>
+            <button
+              onClick={handleScroll}
+              className="border-none hover:underline"
+            >
+              Ayuda
+            </button>
+          </li>
+          <li className="">
+            <DarkMode />
           </li>
         </ul>
-
-        <div className="hidden md:block">
-          <DarkMode />
-        </div>
-
         <BurguerMenu />
 
         {!user.length ? (
           mediumScreen ? (
             <form
               onSubmit={handleLogIn}
-              className={`hidden md:flex items-center gap-2 ml-8 text-black`}
+              className={`hidden md:flex items-center gap-5 ml-8 text-black dark:text-white`}
             >
               <div className="flex flex-col items-start">
                 <label htmlFor="email">Email:</label>
@@ -139,6 +142,7 @@ const NavBar = () => {
                   name="email"
                   onChange={handleChange}
                   value={userInfo.email}
+                  className="rounded-xl border-2 border-black dark:border-white dark:border dark:bg-neutral-600"
                 />
                 <label htmlFor="password">Contraseña:</label>
                 <input
@@ -146,14 +150,18 @@ const NavBar = () => {
                   name="password"
                   onChange={handleChange}
                   value={userInfo.password}
+                  className="rounded-xl border-2 border-black dark:border-white dark:border dark:bg-neutral-600"
                 />
               </div>
-              <div className="text-center">
-                <button type="submit" className="p-2">
+              <div className="text-center text-sm flex flex-col gap-2">
+                <button
+                  type="submit"
+                  className="p-2 rounded-lg bg-indigo-400 hover:bg-blue-500 dark:bg-indigo-900 dark:hover:bg-indigo-600 border-black dark:border-white border"
+                >
                   Iniciar sesión
                 </button>
                 <Link to={"/crearCuenta"}>
-                  <span className="underline cursor-pointer">
+                  <span className="cursor-pointer hover:underline">
                     Crear cuenta
                   </span>
                 </Link>
@@ -162,7 +170,7 @@ const NavBar = () => {
           ) : (
             <form
               onSubmit={handleLogIn}
-              className={`hidden lg:flex items-center justify-evenly w-6/12 text-black`}
+              className={`hidden lg:flex items-center justify-evenly w-6/12 text-black dark:text-white`}
             >
               <div className={`flex flex-col items-start`}>
                 <label htmlFor="email">Email:</label>
@@ -171,6 +179,7 @@ const NavBar = () => {
                   name="email"
                   onChange={handleChange}
                   value={userInfo.email}
+                  className="rounded-xl border-2 border-black dark:border-white dark:border dark:bg-neutral-600"
                 />
               </div>
               <div className={`flex flex-col items-start`}>
@@ -180,16 +189,20 @@ const NavBar = () => {
                   name="password"
                   onChange={handleChange}
                   value={userInfo.password}
+                  className="rounded-xl border-2 border-black dark:border-white dark:border dark:bg-neutral-600"
                 />
               </div>
               <div>
-                <button type="submit" className="my-2">
+                <button
+                  type="submit"
+                  className="my-2 p-1 rounded-lg bg-indigo-400 hover:bg-blue-500 dark:bg-indigo-900 dark:hover:bg-indigo-600 border-black dark:border-white border"
+                >
                   Iniciar sesión
                 </button>
                 <p className="text-sm">
                   ¿No tienes una cuenta? <b></b>
                   <Link to={"/crearCuenta"}>
-                    <span className="underline cursor-pointer">
+                    <span className="underline cursor-pointer mr-2">
                       Crea una aquí
                     </span>
                   </Link>

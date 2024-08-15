@@ -24,12 +24,15 @@ export const TaskSlice = createSlice({
       state.searchTasks = [...action.payload];
     },
     getTasksDeleted: (state, action) => {
-      state.tasksDeleted = [...action.payload]
+      state.tasksDeleted = [...action.payload];
     },
     searchTasks: (state, action) => {
       state.allTasks = state.searchTasks.filter((task) => {
         return task.description.toUpperCase().startsWith(action.payload);
-      })
+      });
+    },
+    newOrder: (state, action) => {
+      state.allTasks = [...action.payload];
     },
   },
 });
@@ -50,7 +53,7 @@ export const getTasksAPI = () => async (dispatch: AppDispatch) => {
 export const getTasksDeletedAPI = () => async (dispatch: AppDispatch) => {
   try {
     const { data } = await axiosURL.get("/task/deleted");
-    if(data) {
+    if (data) {
       dispatch(getTasksDeleted(data));
     } else {
       dispatch(getTasksDeleted([]));
@@ -60,11 +63,28 @@ export const getTasksDeletedAPI = () => async (dispatch: AppDispatch) => {
   }
 };
 
-export const searchATask = (task: string) => async (dispatch: AppDispatch) => {
-    if (task) {
-      dispatch(searchTasks(task));
+export const searchATask = (task: string) => (dispatch: AppDispatch) => {
+  if (task) {
+    dispatch(searchTasks(task));
+  }
+};
+
+export const reOrderTasks =
+  (newArray: TasksList) => async (dispatch: AppDispatch) => {
+    if (newArray) {
+      dispatch(newOrder(newArray));
     }
-}
+    try {
+      const { data } = await axiosURL.post("/task/newOrder", newArray);
+      if (data) {
+        dispatch(newOrder(data));
+        console.log(data);
+      }
+    } catch (error) {
+      if (error instanceof Error) console.error(error.message);
+    }
+  };
 
 export default TaskSlice.reducer;
-export const { getTasks, getTasksDeleted, searchTasks } = TaskSlice.actions;
+export const { getTasks, getTasksDeleted, searchTasks, newOrder } =
+  TaskSlice.actions;

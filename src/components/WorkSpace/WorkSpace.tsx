@@ -1,18 +1,39 @@
+//!Hooks
 import React, { useEffect, useState } from "react";
-import NavBar from "../navBar/NavBar";
 import axiosURL from "../../axiosConfig/axiosURL";
-import { Important, Task } from "../../types";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
-import { getTasksAPI, searchATask } from "../../redux/slices/Tasks/taskSlice";
+import {
+  getTasksAPI,
+  reOrderTasks,
+  searchATask,
+} from "../../redux/slices/Tasks/taskSlice";
 import { Link } from "react-router-dom";
-import { Calendar, dayjsLocalizer } from "react-big-calendar";
-import dayjs from "dayjs";
-import styles from "./workSpace.module.css";
+
+//!Components
+import NavBar from "../navBar/NavBar";
+import { Important, Task } from "../../types";
 import Footer from "../Footer/Footer";
+import ImportantTask from "./ImportantTask/ImportantTask";
+import UrgencyTask from "./UrgencyTask/UrgencyTask";
+
+//!DragAndDrop
+import { closestCenter, DndContext } from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+
+//!Selector de fechas
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import emailjs from "@emailjs/browser";
+import Swal from "sweetalert2";
 
 const WorkSpace = () => {
   const dispatch = useAppDispatch();
 
+  //!States
   const allTasks = useAppSelector((state) => state.Task.allTasks);
   const tasksElimFalse = allTasks.filter((task) => task.elim === false);
   const urgencyTask = tasksElimFalse.filter((task) => task.urgency === true);
@@ -20,12 +41,8 @@ const WorkSpace = () => {
     (task) => task.urgency === false
   );
   const [colorModal, setColorModal] = useState(false);
-
   const [calendarOpen, setCalendarOpen] = useState(false);
-  const localizer = dayjsLocalizer(dayjs);
-
   const [descriptionNotCreated, setDescriptionNotCreated] = useState("");
-
   const [task, setTask] = useState<Task>({
     id: 0,
     description: "",
@@ -34,30 +51,78 @@ const WorkSpace = () => {
     date: new Date(),
     elim: false,
     color: "white",
+    reminder: new Date(),
+  });
+  const [reminder, setReminder] = useState(new Date());
+  const [today, setToday] = useState(new Date());
+  const [allReminderTasks, setAllReminderTasks] = useState<Task[]>([]);
+  const [info, setInfo] = useState({
+    from_name: "Lucas",
+    from_email: "jiji@gmail.com",
+    message: "Recordatorio funcionando",
   });
 
   useEffect(() => {
     dispatch(getTasksAPI());
   }, []);
+  console.log(allReminderTasks)
 
-  const updateUrgency = async (id: number): Promise<void> => {
-    try {
-      const { data } = await axiosURL.put(`/task/${id}`, { urgency: true });
-      if (data) {
-        dispatch(getTasksAPI());
-      }
-    } catch (error) {
-      if (error instanceof Error) console.error(error.message);
-    }
-  };
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setToday(new Date());
+      today.setHours(0, 0, 0, 0);
+      allReminderTasks.forEach(async (task) => {
+        task.reminder.setHours(0, 0, 0, 0);
 
+        if (task.reminder.getTime() === today.getTime()) {
+          emailjs 
+            .send("service_ums6x4q", "template_7sfakso", info, {
+              publicKey: "zADAsfTnn9pOJcyPO",
+            })
+            .then(
+              () => {
+                Swal.fire({
+                  title: "Mensaje enviado correctamente!",
+                  text: "Serás contactado a la brevedad.",
+                  icon: "success",
+                });
+                setInfo({ from_name: "", from_email: "", message: "" });
+              },
+              (error) => {
+                console.log("FAILED...", error.text);
+                Swal.fire({
+                  icon: "error",
+                  title: "Algo salió mal!",
+                  text: "Verifica los datos ingresados.",
+                });
+              }
+            );
+            const { data } = await axiosURL.delete(`/task/${task.id}`);
+            if (data) console.log(data);
+          clearInterval(interval);
+        }
+      });
+    }, 60000);
+    return () => clearInterval(interval);
+  }, [allReminderTasks, today]);
+  // console.log(today)
+
+  //!Functions
   // any para manejar funciones desde un textArea y un input normal
-  const handleDescription = (event: any) => {
+  const handleDescription = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setTask({
       ...task,
       description: event.target.value,
     });
-    setDescriptionNotCreated(event.target.value);
+  };
+
+  const handleNewTaskSearchDescription = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setTask({
+      ...task,
+      description: event.target.value,
+    });
   };
 
   // any para manejar funciones desde un button y un select
@@ -89,6 +154,11 @@ const WorkSpace = () => {
       const { data } = await axiosURL.post("/task", task);
       if (data) {
         console.log(data);
+        const response = await axiosURL.put(`/task/${data.id}`, {
+          ...data,
+          reminder,
+        });
+        if (response) setAllReminderTasks([...allReminderTasks, response.data]);
         setTask({
           id: 0,
           description: "",
@@ -97,26 +167,16 @@ const WorkSpace = () => {
           date: new Date(),
           elim: false,
           color: "",
+          reminder: new Date(),
         });
         await dispatch(getTasksAPI());
-        setDescriptionNotCreated('');
+        setDescriptionNotCreated("");
       }
     } catch (error) {
       if (error instanceof Error) console.error(error.message);
     }
   };
-  console.log(task)
-
-  const handleDelete = async (id: number): Promise<void> => {
-    try {
-      const { data } = await axiosURL.put(`/task/${id}`, { elim: true });
-      if (data) {
-        await dispatch(getTasksAPI());
-      }
-    } catch (error) {
-      if (error instanceof Error) console.error(error.message);
-    }
-  };
+  // console.log(task);
 
   const handleSearch = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -124,10 +184,47 @@ const WorkSpace = () => {
     let description = event.target.value;
     setDescriptionNotCreated(description);
     if (description.length) {
-      await dispatch(searchATask(description.toUpperCase()));
+      dispatch(searchATask(description.toUpperCase()));
+      setTask({ ...task, description });
     } else {
       await dispatch(getTasksAPI());
-      // description = '';
+      setTask({ ...task, description: "" });
+      setDescriptionNotCreated("");
+    }
+  };
+
+  const handleDragEnd = async (event: any) => {
+    const { active, over } = event;
+
+    const oldIndex = tasksElimFalse.findIndex((task) => task.id === active.id);
+    const newIndex = tasksElimFalse.findIndex((task) => task.id === over.id);
+    const newOrderTasks = arrayMove(tasksElimFalse, oldIndex, newIndex);
+    if (newOrderTasks) {
+      await dispatch(reOrderTasks(newOrderTasks));
+    }
+  };
+
+  const handleDateReminder = async (date: Date | null, event: any) => {
+    event.preventDefault();
+    today.setHours(0, 0, 0, 0);
+
+    if (date) {
+      const selectedDate = new Date(date);
+      selectedDate.setHours(0, 0, 0, 0);
+
+      if (selectedDate < today) {
+        return window.alert(
+          "El recordatorio no puede ser menor a la fecha actual!"
+        );
+      }
+      setReminder(date);
+
+      // if (selectedDate == today) {
+      //   console.log(reminder);
+      //   setReminder(date);
+
+      //   window.alert(`Recordatorio para ${date}`);
+      // }
     }
   };
 
@@ -153,12 +250,13 @@ const WorkSpace = () => {
               className="w-4/5 md:w-full border border-black dark:border-white rounded-xl text-black p-1"
             ></textarea>
             <div className="flex justify-evenly gap-10 md:gap-0 md:w-full">
-              <button onClick={handleUrgency} name="urgency">
+              <button type="button" onClick={handleUrgency} name="urgency">
                 Urgencia
               </button>
               <div className="flex flex-col">
                 <p>Importancia</p>
                 <button
+                  type="button"
                   onClick={handleImportancy}
                   name={Important.HIGH}
                   value={Important.HIGH}
@@ -166,6 +264,7 @@ const WorkSpace = () => {
                   HIGH
                 </button>
                 <button
+                  type="button"
                   onClick={handleImportancy}
                   name={Important.MEDIUM}
                   value={Important.MEDIUM}
@@ -173,6 +272,7 @@ const WorkSpace = () => {
                   MEDIUM
                 </button>
                 <button
+                  type="button"
                   onClick={handleImportancy}
                   name={Important.LOW}
                   value={Important.LOW}
@@ -182,13 +282,28 @@ const WorkSpace = () => {
               </div>
             </div>
             <div className="flex justify-center md:w-full">
-              <button onClick={() => setCalendarOpen(true)}>
+              <button type="button" onClick={() => setCalendarOpen(true)}>
                 Recordatorio
               </button>
               {calendarOpen && (
                 <div>
-                  <button onClick={() => setCalendarOpen(false)}>X</button>
-                  <Calendar className={styles.calendar} localizer={localizer} />
+                  {/* <Calendar className='w-screen flex' localizer={localizer} /> */}
+                  <div className="w-3/4 h-3/4 absolute inset-0 m-auto flex flex-col bg-red-300 items-center">
+                    <button
+                      type="button"
+                      onClick={() => setCalendarOpen(false)}
+                    >
+                      X
+                    </button>
+                    <DatePicker
+                      dateFormat="dd/MM/yyyy"
+                      selected={reminder}
+                      onChange={handleDateReminder}
+                      // minDate={Today}
+                      // locale="es-ES"
+                      todayButton="Hoy"
+                    />
+                  </div>
                 </div>
               )}
             </div>
@@ -259,7 +374,7 @@ const WorkSpace = () => {
                 type="text"
                 placeholder={descriptionNotCreated}
                 className="text-black"
-                onChange={handleDescription}
+                onChange={handleNewTaskSearchDescription}
                 value={descriptionNotCreated}
               />
               <button onClick={handleUrgency}>Urgencia</button>
@@ -278,69 +393,50 @@ const WorkSpace = () => {
             </form>
           )}
         </section>
+        <DndContext
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={importantTasks}
+            strategy={verticalListSortingStrategy}
+          >
+            <section>
+              <h1 className="text-center text-4xl lg:pb-5">Mis Tareas</h1>
+              <article className="flex flex-col gap-16 md:flex-row md:gap-20 pt-5 p-10 lg:p-0">
+                <div className="text-center flex flex-col gap-2">
+                  <h2>Urgente</h2>
+                  <section className="flex p-4 border border-black dark:border-white rounded-xl h-96 w-44">
+                    {urgencyTask?.map((task) => (
+                      <main key={task.id}>
+                        <UrgencyTask task={task} />
+                      </main>
+                    ))}
+                  </section>
+                </div>
 
-        <section>
-          <h1 className="text-center text-4xl lg:pb-5">Mis Tareas</h1>
-          <article className="flex flex-col gap-16 md:flex-row md:gap-20 pt-5 p-10 lg:p-0">
-            <div className="text-center flex flex-col gap-2">
-              <h2>Urgente</h2>
-              <section className="flex p-4 border border-black dark:border-white rounded-xl h-96 w-44">
-                {urgencyTask?.map((task) => (
-                  <div
+                <div className="border border-black dark:border-white w-full md:h-96"></div>
+
+                <div className="text-center flex flex-col gap-2">
+                  <h2>Importancia</h2>
+                  <article
                     key={task.id}
-                    className="flex flex-col justify-evenly lg:justify-around h-full m-auto lg:w-4/5"
-                    style={{ backgroundColor: task.color }}
+                    className="flex flex-col items-center justify-around h-96 border border-black dark:border-white rounded-xl p-4 w-48 overflow-y-auto dark:text-black"
                   >
-                    <p className="text-2xl">{task.description}</p>
-                    <div className="border border-black dark:border-white w-10/12 mx-auto"></div>
-                    <p>
-                      Debe estar lista para: <br></br>
-                      {new Date(task?.date).toLocaleString("es-ES", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })}
-                    </p>
-                    <button onClick={() => handleDelete(task.id)}>
-                      Completar Tarea
-                    </button>
-                  </div>
-                ))}
-              </section>
-            </div>
-
-            <div className="border border-black dark:border-white w-full md:h-96"></div>
-
-            <div className="text-center flex flex-col gap-2">
-              <h2>Importancia</h2>
-              <article className="flex flex-col items-center justify-around h-96 border border-black dark:border-white rounded-xl p-4 w-48 overflow-y-auto dark:text-black">
-                {importantTasks?.map((task) => (
-                  <>
-                    <section
-                      key={task.id}
-                      data-task-id={task.id}
-                      style={{ backgroundColor: task.color }}
-                      className="p-2 rounded-xl"
-                    >
-                      <h3>{task.important}</h3>
-                      <div className="border border-black dark:border-white w-10/12 mx-auto"></div>
-                      <p className="text-xl">{task.description}</p>
-                      <button onClick={() => handleDelete(task.id)}>
-                        Completar Tarea
-                      </button>
-                      <button onClick={() => updateUrgency(task.id)}>
-                        Urgente
-                      </button>
-                    </section>
-                  </>
-                ))}
+                    {importantTasks?.map((task) => (
+                      <main key={task.id}>
+                        <ImportantTask task={task} />
+                      </main>
+                    ))}
+                  </article>
+                  <Link to={"/trash"} className="pt-2">
+                    Tareas Completadas
+                  </Link>
+                </div>
               </article>
-              <Link to={"/trash"} className="pt-2">
-                Tareas Completadas
-              </Link>
-            </div>
-          </article>
-        </section>
+            </section>
+          </SortableContext>
+        </DndContext>
       </main>
       <Footer />
     </React.Fragment>
