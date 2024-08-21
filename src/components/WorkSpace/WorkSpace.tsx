@@ -11,10 +11,13 @@ import { Link } from "react-router-dom";
 
 //!Components
 import NavBar from "../navBar/NavBar";
-import { Important, Task } from "../../types";
+import { Important, Task, TasksList } from "../../types";
 import Footer from "../Footer/Footer";
 import ImportantTask from "./ImportantTask/ImportantTask";
 import UrgencyTask from "./UrgencyTask/UrgencyTask";
+//Css
+import styles from "./workSpace.module.css";
+import CloseIcon from "@mui/icons-material/Close";
 
 //!DragAndDrop
 import { closestCenter, DndContext } from "@dnd-kit/core";
@@ -35,13 +38,12 @@ const WorkSpace = () => {
 
   //!States
   const allTasks = useAppSelector((state) => state.Task.allTasks);
-  const tasksElimFalse = allTasks.filter((task) => task.elim === false);
-  const urgencyTask = tasksElimFalse.filter((task) => task.urgency === true);
-  const importantTasks = tasksElimFalse.filter(
-    (task) => task.urgency === false
-  );
-  const [colorModal, setColorModal] = useState(false);
+  const urgencyTask = allTasks.filter((task) => task.urgency === true);
+  const importantTasks = allTasks.filter((task) => task.urgency === false);
+  const [colorOpen, setColorOpen] = useState(false);
+  const [colorClose, setColorClose] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const [calendarClose, setCalendarClose] = useState(false);
   const [descriptionNotCreated, setDescriptionNotCreated] = useState("");
   const [task, setTask] = useState<Task>({
     id: 0,
@@ -55,7 +57,6 @@ const WorkSpace = () => {
   });
   const [reminder, setReminder] = useState(new Date());
   const [today, setToday] = useState(new Date());
-  const [allReminderTasks, setAllReminderTasks] = useState<Task[]>([]);
   const [info, setInfo] = useState({
     from_name: "Lucas",
     from_email: "jiji@gmail.com",
@@ -65,47 +66,53 @@ const WorkSpace = () => {
   useEffect(() => {
     dispatch(getTasksAPI());
   }, []);
-  console.log(allReminderTasks)
 
+  //! comparar la fecha del recordatorio con la fecha actual
   useEffect(() => {
-    const interval = setInterval(() => {
-      setToday(new Date());
-      today.setHours(0, 0, 0, 0);
-      allReminderTasks.forEach(async (task) => {
-        task.reminder.setHours(0, 0, 0, 0);
+    const intervalId = setInterval(() => {
+      const today = new Date();
+      setToday(today);
 
-        if (task.reminder.getTime() === today.getTime()) {
-          emailjs 
-            .send("service_ums6x4q", "template_7sfakso", info, {
-              publicKey: "zADAsfTnn9pOJcyPO",
-            })
-            .then(
-              () => {
-                Swal.fire({
-                  title: "Mensaje enviado correctamente!",
-                  text: "Serás contactado a la brevedad.",
-                  icon: "success",
-                });
-                setInfo({ from_name: "", from_email: "", message: "" });
-              },
-              (error) => {
-                console.log("FAILED...", error.text);
-                Swal.fire({
-                  icon: "error",
-                  title: "Algo salió mal!",
-                  text: "Verifica los datos ingresados.",
-                });
-              }
-            );
-            const { data } = await axiosURL.delete(`/task/${task.id}`);
-            if (data) console.log(data);
-          clearInterval(interval);
+      const tasksDone: TasksList = [];
+
+      const deleteAfterReminder = allTasks.map(async (task) => {
+        const reminderDate = new Date(task.reminder);
+
+        if (reminderDate.getTime() <= today.getTime()) {
+          tasksDone.push(task);
         }
       });
-    }, 60000);
-    return () => clearInterval(interval);
-  }, [allReminderTasks, today]);
-  // console.log(today)
+
+      if (tasksDone.length) {
+        emailjs
+          .send("service_ums6x4q", "template_7sfakso", info, {
+            publicKey: "zADAsfTnn9pOJcyPO",
+          })
+          .then(
+            () => {
+              Swal.fire({
+                title: "Mensaje enviado correctamente!",
+                text: "Serás contactado a la brevedad.",
+                icon: "success",
+              });
+              setInfo({ from_name: "", from_email: "", message: "" });
+            },
+            (error) => {
+              console.log("FAILED...", error.text);
+              Swal.fire({
+                icon: "error",
+                title: "Algo salió mal!",
+                text: "Verifica los datos ingresados.",
+              });
+            }
+          );
+      }
+      Promise.all(deleteAfterReminder);
+    }, 60000); // 60000ms = 1 minuto
+
+    // Cleanup interval when the component is unmounted
+    return () => clearInterval(intervalId);
+  }, [allTasks]);
 
   //!Functions
   // any para manejar funciones desde un textArea y un input normal
@@ -151,14 +158,13 @@ const WorkSpace = () => {
   const handleSubmit = async (event: React.FormEvent): Promise<void> => {
     try {
       event.preventDefault();
+      const exactReminder = new Date(reminder.getTime());
       const { data } = await axiosURL.post("/task", task);
       if (data) {
-        console.log(data);
-        const response = await axiosURL.put(`/task/${data.id}`, {
+        await axiosURL.put(`/task/${data.id}`, {
           ...data,
-          reminder,
+          reminder: exactReminder,
         });
-        if (response) setAllReminderTasks([...allReminderTasks, response.data]);
         setTask({
           id: 0,
           description: "",
@@ -166,17 +172,17 @@ const WorkSpace = () => {
           important: Important.HIGH,
           date: new Date(),
           elim: false,
-          color: "",
+          color: "white",
           reminder: new Date(),
         });
         await dispatch(getTasksAPI());
         setDescriptionNotCreated("");
+        setReminder(new Date());
       }
     } catch (error) {
       if (error instanceof Error) console.error(error.message);
     }
   };
-  // console.log(task);
 
   const handleSearch = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -196,9 +202,9 @@ const WorkSpace = () => {
   const handleDragEnd = async (event: any) => {
     const { active, over } = event;
 
-    const oldIndex = tasksElimFalse.findIndex((task) => task.id === active.id);
-    const newIndex = tasksElimFalse.findIndex((task) => task.id === over.id);
-    const newOrderTasks = arrayMove(tasksElimFalse, oldIndex, newIndex);
+    const oldIndex = allTasks.findIndex((task) => task.id === active.id);
+    const newIndex = allTasks.findIndex((task) => task.id === over.id);
+    const newOrderTasks = arrayMove(allTasks, oldIndex, newIndex);
     if (newOrderTasks) {
       await dispatch(reOrderTasks(newOrderTasks));
     }
@@ -206,11 +212,11 @@ const WorkSpace = () => {
 
   const handleDateReminder = async (date: Date | null, event: any) => {
     event.preventDefault();
-    today.setHours(0, 0, 0, 0);
+    today.setUTCHours(0, 0, 0, 0);
 
     if (date) {
       const selectedDate = new Date(date);
-      selectedDate.setHours(0, 0, 0, 0);
+      selectedDate.setUTCHours(0, 0, 0, 0);
 
       if (selectedDate < today) {
         return window.alert(
@@ -218,27 +224,55 @@ const WorkSpace = () => {
         );
       }
       setReminder(date);
-
-      // if (selectedDate == today) {
-      //   console.log(reminder);
-      //   setReminder(date);
-
-      //   window.alert(`Recordatorio para ${date}`);
-      // }
     }
   };
+
+  const handleHour = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // separa las horas de los minutos con : y volverlas nums
+    const [hour, minutes] = event.target.value.split(":").map(Number);
+    // crear una copia de reminder
+    const hourReminder = new Date(reminder);
+    // setear las horas
+    hourReminder.setHours(hour, minutes, 0, 0);
+    setReminder(hourReminder);
+  };
+
+  //! modales
+  const handleCalendarOpen = () => {
+    setCalendarOpen(true);
+    setCalendarClose(false);
+  }
+
+  const handleCalendarClose = () => {
+    setCalendarClose(true);
+    setTimeout(() => {
+      setCalendarOpen(false);
+    }, 500);
+  }
+
+  const handleColorOpen = () => {
+    setColorOpen(true);
+    setColorClose(false);
+  }
+
+  const handleColorClose = () => {
+    setColorClose(true);
+    setTimeout(() => {
+      setColorOpen(false);
+    }, 500);
+  }
 
   return (
     <React.Fragment>
       <NavBar />
       <main
-        className={`pt-28 md:pt-52 px-5 pb-32 lg:pt-48 flex flex-col lg:flex-row w-full justify-around items-center lg:items-baseline overflow-hidden gap-16 lg:gap-0 dark:bg-neutral-900 text-black dark:text-white`}
+        className={`pt-64 md:pt-52 px-5 pb-32 lg:pt-44 flex flex-col lg:flex-row w-full justify-around items-center lg:items-baseline overflow-hidden gap-16 lg:gap-0 dark:bg-neutral-900 text-black dark:text-white bg-gradient-to-bl from-white via-violet-200 to-purple-600 dark:bg-gradient-to-br dark:from-neutral-700 dark:via-black dark:to-violet-950`}
       >
-        <section>
+        <section className="p-2 md:p-10 lg:p-2 lg:w-1/4 h-fit border border-black dark:border-white rounded-xl">
           <h1 className="text-center text-4xl">Crear Nueva Tarea</h1>
           <form
             onSubmit={handleSubmit}
-            className="flex flex-col gap-10 md:gap-7 pt-5 items-center"
+            className="flex flex-col gap-10 md:gap-7 pt-5 h-96 items-center"
           >
             <textarea
               name="description"
@@ -247,11 +281,11 @@ const WorkSpace = () => {
               rows={3}
               value={task.description}
               onChange={handleDescription}
-              className="w-4/5 md:w-full border border-black dark:border-white rounded-xl text-black p-1"
+              className={`w-4/5 md:w-full md:max-w-56 border border-black dark:border-white rounded-xl text-black p-1 ${styles.textarea}`}
             ></textarea>
-            <div className="flex justify-evenly gap-10 md:gap-0 md:w-full">
+            <div className="flex justify-around items-center gap-10 md:gap-0 w-4/6 md:w-full">
               <button type="button" onClick={handleUrgency} name="urgency">
-                Urgencia
+                Urgente
               </button>
               <div className="flex flex-col">
                 <p>Importancia</p>
@@ -281,76 +315,94 @@ const WorkSpace = () => {
                 </button>
               </div>
             </div>
-            <div className="flex justify-center md:w-full">
-              <button type="button" onClick={() => setCalendarOpen(true)}>
+            <div>
+              <button
+                type="button"
+                onClick={handleCalendarOpen}
+                className="p-1 rounded-lg bg-violet-500 hover:bg-purple-500 dark:bg-violet-900 dark:hover:bg-purple-600 border-black dark:border-white border"
+              >
                 Recordatorio
               </button>
               {calendarOpen && (
                 <div>
-                  {/* <Calendar className='w-screen flex' localizer={localizer} /> */}
-                  <div className="w-3/4 h-3/4 absolute inset-0 m-auto flex flex-col bg-red-300 items-center">
+                  <div className={`w-3/5 lg:w-2/5 h-fit lg:h-2/5 p-5 absolute inset-0 m-auto flex flex-col gap-10 bg-purple-300 items-center dark:text-black border border-black rounded-xl ${calendarClose ? styles.close : styles.open}`}>
                     <button
                       type="button"
-                      onClick={() => setCalendarOpen(false)}
+                      onClick={handleCalendarClose}
                     >
-                      X
+                      <CloseIcon />
                     </button>
-                    <DatePicker
-                      dateFormat="dd/MM/yyyy"
-                      selected={reminder}
-                      onChange={handleDateReminder}
-                      // minDate={Today}
-                      // locale="es-ES"
-                      todayButton="Hoy"
-                    />
+                    <section>
+                      <p>Selecciona una fecha:</p>
+                      <DatePicker
+                        dateFormat="dd/MM/yyyy"
+                        selected={reminder}
+                        onChange={handleDateReminder}
+                        todayButton="Hoy"
+                      />
+                    </section>
+
+                    <section>
+                      <p>Selecciona una hora:</p>
+                      <input type="time" onChange={handleHour} />
+                    </section>
                   </div>
                 </div>
               )}
             </div>
+
             <div className="flex justify-around gap-10 md:gap-0 md:w-full">
-              <button type="button" onClick={() => setColorModal(true)}>
+              <button
+                type="button"
+                onClick={handleColorOpen}
+                className="p-1 rounded-lg bg-red-400 hover:bg-red-500 dark:bg-red-900 dark:hover:bg-red-600 border-black dark:border-white border"
+              >
                 Color
               </button>
 
               {/* Cambiar el color de la task */}
-              {colorModal && (
-                <section className="absolute m-auto inset-0 w-1/3 h-2/3 bg-amber-100 rounded-xl p-4">
-                  <button type="button" onClick={() => setColorModal(false)}>
-                    X
+              {colorOpen && (
+                // Hacer un componente de colores
+                <section className={`absolute m-auto inset-0 w-2/3 md:w-1/4 h-fit bg-lime-200 rounded-xl p-5 ${colorClose ? styles.close : styles.open}`}>
+                  <button type="button" onClick={handleColorClose}>
+                    <CloseIcon className="text-black" />
                   </button>
-                  <button
-                    type="button"
-                    className="rounded-full border border-white text-transparent bg-red-200"
-                    onClick={() => {
-                      handleColor("#ec8383");
-                      setColorModal(false);
-                    }}
-                  >
-                    red
-                  </button>
-                  <button
-                    type="button"
-                    className="rounded-full border border-white text-transparent bg-green-200"
-                    onClick={() => {
-                      handleColor("#91ec83");
-                      setColorModal(false);
-                    }}
-                  >
-                    red
-                  </button>
-                  <button
-                    type="button"
-                    className="rounded-full border border-white text-transparent bg-blue-200"
-                    onClick={() => {
-                      handleColor("#8399ec");
-                      setColorModal(false);
-                    }}
-                  >
-                    red
-                  </button>
+
+                  <div className="flex items-center justify-center gap-2">
+                    <button
+                      type="button"
+                      className="rounded-full border border-white text-transparent bg-red-200"
+                      onClick={() => {
+                        handleColor("#ec8383");
+                        handleColorClose();
+                      }}
+                    >
+                      red
+                    </button>
+                    <button
+                      type="button"
+                      className="rounded-full border border-white text-transparent bg-green-200"
+                      onClick={() => {
+                        handleColor("#91ec83");
+                        handleColorClose();
+                      }}
+                    >
+                      red
+                    </button>
+                    <button
+                      type="button"
+                      className="rounded-full border border-white text-transparent bg-blue-200"
+                      onClick={() => {
+                        handleColor("#8399ec");
+                        handleColorClose();
+                      }}
+                    >
+                      red
+                    </button>
+                  </div>
                 </section>
               )}
-              <button type="submit">Agregar</button>
+              <button type="submit" className="p-1 rounded-lg bg-pink-400 hover:bg-pink-500 dark:bg-pink-900 dark:hover:bg-pink-600 border-black dark:border-white border">Agregar</button>
             </div>
           </form>
         </section>
@@ -393,30 +445,31 @@ const WorkSpace = () => {
             </form>
           )}
         </section>
-        <DndContext
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
-        >
-          <SortableContext
-            items={importantTasks}
-            strategy={verticalListSortingStrategy}
-          >
-            <section>
-              <h1 className="text-center text-4xl lg:pb-5">Mis Tareas</h1>
-              <article className="flex flex-col gap-16 md:flex-row md:gap-20 pt-5 p-10 lg:p-0">
-                <div className="text-center flex flex-col gap-2">
-                  <h2>Urgente</h2>
-                  <section className="flex p-4 border border-black dark:border-white rounded-xl h-96 w-44">
-                    {urgencyTask?.map((task) => (
-                      <main key={task.id}>
-                        <UrgencyTask task={task} />
-                      </main>
-                    ))}
-                  </section>
-                </div>
 
-                <div className="border border-black dark:border-white w-full md:h-96"></div>
+        <section className="p-3 h-fit border border-black dark:border-white rounded-xl">
+          <h1 className="text-center text-4xl lg:pb-5">Mis Tareas</h1>
+          <article className="flex flex-col gap-16 md:flex-row md:gap-20 pt-5 p-10 lg:p-0">
+            <div className="text-center flex flex-col gap-2">
+              <h2>Urgente</h2>
+              <section className="flex p-4 border border-black dark:border-white rounded-xl h-96 w-44">
+                {urgencyTask?.map((task) => (
+                  <main key={task.id}>
+                    <UrgencyTask task={task} />
+                  </main>
+                ))}
+              </section>
+            </div>
 
+            <div className="border border-black dark:border-white w-full md:h-96"></div>
+
+            <DndContext
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext
+                items={importantTasks}
+                strategy={verticalListSortingStrategy}
+              >
                 <div className="text-center flex flex-col gap-2">
                   <h2>Importancia</h2>
                   <article
@@ -433,10 +486,10 @@ const WorkSpace = () => {
                     Tareas Completadas
                   </Link>
                 </div>
-              </article>
-            </section>
-          </SortableContext>
-        </DndContext>
+              </SortableContext>
+            </DndContext>
+          </article>
+        </section>
       </main>
       <Footer />
     </React.Fragment>

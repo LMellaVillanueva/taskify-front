@@ -45,16 +45,19 @@ const ImportantTask: React.FC<Prop> = ({ task }) => {
   };
 
   return (
-    <main ref={setNodeRef} {...attributes} {...listeners} style={style}>
+    <main ref={setNodeRef} {...attributes} style={style}>
       <section
         key={task.id}
         data-task-id={task.id}
         style={{ backgroundColor: task.color }}
-        className="p-2 rounded-xl cursor-pointer"
+        className="p-2 rounded-xl text-black"
       >
-        <h3>{task.important}</h3>
-        <div className="border border-black dark:border-white w-10/12 mx-auto"></div>
-        <p className="text-xl p-1">{task.description}</p>
+        <div {...listeners} className="cursor-pointer">
+          <h3>{task.important}</h3>
+          <div className="border border-black w-10/12 mx-auto"></div>
+          <p className="text-xl p-1">{task.description}</p>
+        </div>
+
         <div className="p-2">
           <button onClick={() => handleDelete(task.id)}>Completar Tarea</button>
           <button onClick={() => updateUrgency(task.id)}>Urgente</button>

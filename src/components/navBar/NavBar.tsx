@@ -84,7 +84,7 @@ const NavBar = () => {
   return (
     <>
       <nav
-        className={`absolute font-serif lg:text-lg inset-0 h-32 flex md:justify-between lg:justify-around rounded-b-3xl lg:rounded-b-full p-5 bg-gradient-to-br from-violet-700 via-purple-500 to-indigo-400 dark:text-white text-dark dark:bg-gradient-to-bl dark:from-violet-950 dark:to-purple-700`}
+        className={`absolute font-serif lg:text-base inset-0 h-32 lg:h-24 flex md:justify-between lg:justify-around rounded-b-3xl lg:rounded-b-full p-5 bg-gradient-to-br from-violet-700 via-purple-500 to-indigo-400 dark:text-white text-dark dark:bg-gradient-to-bl dark:from-violet-950 dark:to-purple-700`}
       >
         {/* Vista de calular */}
         <header className={`md:hidden m-auto text-center`}>
@@ -97,15 +97,15 @@ const NavBar = () => {
           <p className="ml-10">La armonía de tu desorden</p>
         </header>
         <ul
-          className={`hidden md:flex items-center justify-center gap-6 lg:w-1/2 lg:justify-evenly lg:gap-0 md:text-lg lg:text-xl`}
+          className={`hidden md:flex items-center justify-center gap-6 lg:w-1/2 lg:justify-evenly lg:gap-0 md:text-lg lg:text-base`}
         >
           <header>
             <img
               src={logo}
               alt="logoTaskify"
-              className="w-1/2 md:w-1/3 lg:w-20 rounded-full m-auto"
+              className="w-1/2 md:w-1/2 lg:w-16 rounded-full m-auto"
             />
-            <p className="text-center md:text-base">
+            <p className="text-center md:text-sm">
               La armonía de tu desorden
             </p>
           </header>
@@ -123,7 +123,7 @@ const NavBar = () => {
               Ayuda
             </button>
           </li>
-          <li className="">
+          <li>
             <DarkMode />
           </li>
         </ul>

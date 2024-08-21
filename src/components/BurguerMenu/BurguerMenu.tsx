@@ -7,18 +7,34 @@ import { logInUser, logOutUser } from "../../redux/slices/Users/userSlice";
 import Swal from "sweetalert2";
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
+import styles from './burgerMenu.module.css';
 
 const BurguerMenu = () => {
   const user = useAppSelector((state) => state.User.user);
   const dispatch = useAppDispatch();
 
   const [open, setOpen] = useState(false);
+  const [close, setClose] = useState(false);
 
   //Creación de cuentas
   const [userInfo, setUserInfo] = useState({
     email: "",
     password: "",
   });
+
+  const handleOpen = () => {
+    setOpen(true);
+    setTimeout(() => {
+      setClose(false);
+    }, 300);
+  }
+
+  const handleClose = () => {
+    setClose(true);
+    setTimeout(() => {
+      setOpen(false);
+    }, 400);
+  }
 
   const handleScroll = (event: any) => {
     event.preventDefault();
@@ -67,30 +83,31 @@ const BurguerMenu = () => {
   return (
     <React.Fragment>
       <main className="md:hidden">
-        <button onClick={() => setOpen(true)} className="border-none"><MenuIcon fontSize="large"/></button>
+        <button onClick={handleOpen} className="border-none"><MenuIcon fontSize="large"/></button>
+        
         {open && (
-          <section className="fixed inset-0 flex flex-col items-center bg-gradient-to-br from-violet-700 via-purple-500 to-indigo-400 dark:text-white text-dark dark:bg-gradient-to-bl dark:from-violet-950 dark:to-purple-700 opacity-95 p-10 gap-8 text-2xl">
+          <section className={`fixed inset-0 flex flex-col items-center bg-gradient-to-br from-violet-700 via-purple-500 to-indigo-400 dark:text-white text-dark dark:bg-gradient-to-bl dark:from-violet-950 dark:to-purple-700 opacity-95 p-10 gap-8 text-xl ${close ? styles.close : styles.open}`}>
             {user.length > 0 && <h3>Bienvenido/a de nuevo {user[0]?.name}!</h3>}
-            <button onClick={() => setOpen(false)} className="absolute right-0 top-0 p-3"><CloseIcon fontSize="large" className="animate-fade"/></button>
+            <button onClick={handleClose} className="absolute right-0 top-0 p-3"><CloseIcon fontSize="large" className="animate-fade animate-delay-500"/></button>
 
 
-            <div className="flex flex-col items-center justify-evenly h-5/6">
+            <div className="flex flex-col items-center justify-evenly">
             <DarkMode />
-              <ul className="flex flex-col items-center justify-between h-56 m-8">
-                <li className="animate-fade-left animate-duration-300 hover:underline">
+              <ul className="flex flex-col items-center justify-between h-44 m-8">
+                <li className="animate-fade-left animate-duration-300 animate-delay-500 hover:underline">
                   <Link to={"/"}>Inicio</Link>
                 </li>
-                <li className="animate-fade-left animate-duration-500 hover:underline">
+                <li className="animate-fade-left animate-duration-500 animate-delay-500 hover:underline">
                   <Link to={"/workSpace"}>Creación</Link>
                 </li>
-                <li className="animate-fade-left animate-duration-7000">
-                  <button onClick={() => {handleScroll(event); setOpen(false);}} className="hover:underline">Ayuda</button>
+                <li className="animate-fade-left animate-duration-7000 animate-delay-500">
+                  <button onClick={() => {handleScroll(event); handleClose();}} className="hover:underline">Ayuda</button>
                 </li>
               </ul>
 
               <form
                 onSubmit={handleLogIn}
-                className={`flex flex-col items-center gap-5 text-black dark:text-white animate-fade-left animate-duration-1000`}
+                className={`flex flex-col items-center gap-5 text-black dark:text-white animate-fade-left animate-duration-1000 animate-delay-500`}
               >
                 <div className={`flex flex-col items-start`}>
                   <label htmlFor="email">Email:</label>
