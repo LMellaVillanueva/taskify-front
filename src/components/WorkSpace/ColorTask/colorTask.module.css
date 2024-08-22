@@ -1,0 +1,35 @@
+.open {
+    animation: open 700ms ease-out;
+}
+
+.close {
+    animation: close 500ms ease;
+}
+
+@keyframes open {
+    10% {
+        opacity: 0;
+        transform: scale(0);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+    75% {
+        transform: scale(0.8);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes close {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0);
+    }
+}

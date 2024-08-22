@@ -1,7 +1,7 @@
 import { useState } from "react";
 import logo from "../../assets/logo.png";
-import Swal from "sweetalert2";
 import emailjs from "@emailjs/browser";
+import { toast } from "sonner";
 
 const Footer = () => {
   const [info, setInfo] = useState({
@@ -26,14 +26,13 @@ const Footer = () => {
 
   const sendEmail = (event: React.FormEvent) => {
     event.preventDefault();
+    if (!info.from_name.length) return toast.warning('Debes indicar tu nombre');
+    if (!info.from_email.length) return toast.warning('Debes indicar tu correo');
+    if (!info.message.length) return toast.warning('Debes escribir un mensaje');
     const regexEmail =
       /^[a-zA-Z0-9]+(?!.*(?:\+{2,}|\-{2,}|\.{2,}))(?:[\.+\-]{0,1}[a-zA-Z0-9])*@gmail\.com$/;
     if (!regexEmail.test(info.from_email)) {
-      return Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "La dirección de correo no es válida.",
-      });
+      return toast.error('Oops...', {description: 'La dirección de correo no es válida'});
     }
     emailjs
       .send("service_ums6x4q", "template_7sfakso", info, {
@@ -41,20 +40,12 @@ const Footer = () => {
       })
       .then(
         () => {
-          Swal.fire({
-            title: "Mensaje enviado correctamente!",
-            text: "Serás contactado a la brevedad.",
-            icon: "success",
-          });
+          toast.success('Mensaje enviado!', {description: 'Serás contactado a la brevedad'});
           setInfo({ from_name: "", from_email: "", message: "" });
         },
         (error) => {
           console.log("FAILED...", error.text);
-          Swal.fire({
-            icon: "error",
-            title: "Algo salió mal!",
-            text: "Verifica los datos ingresados.",
-          });
+          toast.error('Oops...', {description: 'Algo salió mal, verifica los datos ingresados'});
         }
       );
   };

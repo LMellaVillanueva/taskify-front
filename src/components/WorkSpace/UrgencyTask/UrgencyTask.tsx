@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 import axiosURL from "../../../axiosConfig/axiosURL";
 import { getTasksAPI } from "../../../redux/slices/Tasks/taskSlice";
 import { useAppDispatch } from "../../../redux/store";
@@ -11,14 +12,16 @@ const UrgencyTask: React.FC<Prop> = ({ task }) => {
 
     const dispatch = useAppDispatch();
 
-    const handleDelete = async (id: number): Promise<void> => {
+    const handleComplete = async (id: number): Promise<void> => {
         try {
           const { data } = await axiosURL.put(`/task/${id}`, { elim: true });
           if (data) {
             await dispatch(getTasksAPI());
-          }
+          toast.success('Tarea Completada', {duration: 1500})
+      }
         } catch (error) {
-          if (error instanceof Error) console.error(error.message);
+      toast.error('Oops...', {description: 'Algo salió mal'});
+      if (error instanceof Error) console.error(error.message);
         }
       };
 
@@ -26,7 +29,7 @@ const UrgencyTask: React.FC<Prop> = ({ task }) => {
     <main>
       <section
         key={task.id}
-        className="flex flex-col justify-evenly lg:justify-around h-full m-auto lg:w-4/5 text-black"
+        className="flex flex-col rounded-xl border-2 border-black justify-evenly lg:justify-around h-80 p-2 text-black"
         style={{ backgroundColor: task.color }}
       >
         <p className="text-2xl">{task.description}</p>
@@ -41,7 +44,7 @@ const UrgencyTask: React.FC<Prop> = ({ task }) => {
             minute: "2-digit",
           })}
         </p>
-        <button onClick={() => handleDelete(task.id)}>Completar Tarea</button>
+        <button onClick={() => handleComplete(task.id)}>Completar Tarea</button>
       </section>
     </main>
   );

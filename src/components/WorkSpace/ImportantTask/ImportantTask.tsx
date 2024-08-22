@@ -4,6 +4,7 @@ import { getTasksAPI } from "../../../redux/slices/Tasks/taskSlice";
 import { useAppDispatch } from "../../../redux/store";
 import { Task } from "../../../types";
 import { CSS } from "@dnd-kit/utilities";
+import { toast } from "sonner";
 
 interface Prop {
   task: Task;
@@ -12,22 +13,25 @@ interface Prop {
 const ImportantTask: React.FC<Prop> = ({ task }) => {
   const dispatch = useAppDispatch();
 
-  const handleDelete = async (id: number): Promise<void> => {
+  const handleComplete = async (id: number): Promise<void> => {
     try {
       const { data } = await axiosURL.put(`/task/${id}`, { elim: true });
       if (data) {
         await dispatch(getTasksAPI());
+        toast.success('Tarea Completada', {duration: 1500})
       }
     } catch (error) {
+      toast.error('Oops...', {description: 'Algo salió mal'});
       if (error instanceof Error) console.error(error.message);
     }
   };
-
+  
   const updateUrgency = async (id: number): Promise<void> => {
     try {
       const { data } = await axiosURL.put(`/task/${id}`, { urgency: true });
       if (data) {
-        dispatch(getTasksAPI());
+        await dispatch(getTasksAPI());
+        toast.success('Tarea urgente actualizada', {duration: 1500})
       }
     } catch (error) {
       if (error instanceof Error) console.error(error.message);
@@ -59,7 +63,7 @@ const ImportantTask: React.FC<Prop> = ({ task }) => {
         </div>
 
         <div className="p-2">
-          <button onClick={() => handleDelete(task.id)}>Completar Tarea</button>
+          <button onClick={() => handleComplete(task.id)}>Completar Tarea</button>
           <button onClick={() => updateUrgency(task.id)}>Urgente</button>
         </div>
       </section>

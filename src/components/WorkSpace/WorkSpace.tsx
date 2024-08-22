@@ -15,7 +15,7 @@ import { Important, Task, TasksList } from "../../types";
 import Footer from "../Footer/Footer";
 import ImportantTask from "./ImportantTask/ImportantTask";
 import UrgencyTask from "./UrgencyTask/UrgencyTask";
-//Css
+//Css & Icons
 import styles from "./workSpace.module.css";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -30,8 +30,12 @@ import {
 //!Selector de fechas
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import emailjs from "@emailjs/browser";
-import Swal from "sweetalert2";
+// import emailjs from "@emailjs/browser";
+// import Swal from "sweetalert2";
+
+//!Notificaciones
+import { toast } from "sonner";
+import ColorTask from "./ColorTask/ColorTask";
 
 const WorkSpace = () => {
   const dispatch = useAppDispatch();
@@ -57,11 +61,11 @@ const WorkSpace = () => {
   });
   const [reminder, setReminder] = useState(new Date());
   const [today, setToday] = useState(new Date());
-  const [info, setInfo] = useState({
-    from_name: "Lucas",
-    from_email: "jiji@gmail.com",
-    message: "Recordatorio funcionando",
-  });
+  // const [info, setInfo] = useState({
+  //   from_name: "Lucas",
+  //   from_email: "jiji@gmail.com",
+  //   message: "Recordatorio funcionando",
+  // });
 
   useEffect(() => {
     dispatch(getTasksAPI());
@@ -84,28 +88,27 @@ const WorkSpace = () => {
       });
 
       if (tasksDone.length) {
-        emailjs
-          .send("service_ums6x4q", "template_7sfakso", info, {
-            publicKey: "zADAsfTnn9pOJcyPO",
-          })
-          .then(
-            () => {
-              Swal.fire({
-                title: "Mensaje enviado correctamente!",
-                text: "Serás contactado a la brevedad.",
-                icon: "success",
-              });
-              setInfo({ from_name: "", from_email: "", message: "" });
-            },
-            (error) => {
-              console.log("FAILED...", error.text);
-              Swal.fire({
-                icon: "error",
-                title: "Algo salió mal!",
-                text: "Verifica los datos ingresados.",
-              });
-            }
-          );
+        // emailjs
+        //   .send("service_ums6x4q", "template_7sfakso", info, {
+        //     publicKey: "zADAsfTnn9pOJcyPO",
+        //   })
+        //   .then(
+        //     () => {
+        //       toast('Tarea finalizada', {
+        //         description: 'Has completado la tarea urgente.',
+        //         icon: <CheckIcon/>
+        //       })
+        //       setInfo({ from_name: "", from_email: "", message: "" });
+        //     },
+        //     (error) => {
+        //       console.log("FAILED...", error.text);
+        //       Swal.fire({
+        //         icon: "error",
+        //         title: "Algo salió mal!",
+        //         text: "Verifica los datos ingresados.",
+        //       });
+        //     }
+        //   );
       }
       Promise.all(deleteAfterReminder);
     }, 60000); // 60000ms = 1 minuto
@@ -115,7 +118,6 @@ const WorkSpace = () => {
   }, [allTasks]);
 
   //!Functions
-  // any para manejar funciones desde un textArea y un input normal
   const handleDescription = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setTask({
       ...task,
@@ -158,6 +160,12 @@ const WorkSpace = () => {
   const handleSubmit = async (event: React.FormEvent): Promise<void> => {
     try {
       event.preventDefault();
+      //! Toast warning
+      if (!task.description.length) {
+        toast.warning('Oops...' ,{
+          description: 'Las tareas deben tener una descripción válida'
+        })
+      }
       const exactReminder = new Date(reminder.getTime());
       const { data } = await axiosURL.post("/task", task);
       if (data) {
@@ -165,6 +173,10 @@ const WorkSpace = () => {
           ...data,
           reminder: exactReminder,
         });
+
+        //* Toast success
+        toast.success('Tarea creada!');
+
         setTask({
           id: 0,
           description: "",
@@ -241,26 +253,19 @@ const WorkSpace = () => {
   const handleCalendarOpen = () => {
     setCalendarOpen(true);
     setCalendarClose(false);
-  }
+  };
 
   const handleCalendarClose = () => {
     setCalendarClose(true);
     setTimeout(() => {
       setCalendarOpen(false);
     }, 500);
-  }
+  };
 
   const handleColorOpen = () => {
     setColorOpen(true);
     setColorClose(false);
-  }
-
-  const handleColorClose = () => {
-    setColorClose(true);
-    setTimeout(() => {
-      setColorOpen(false);
-    }, 500);
-  }
+  };
 
   return (
     <React.Fragment>
@@ -268,11 +273,11 @@ const WorkSpace = () => {
       <main
         className={`pt-64 md:pt-52 px-5 pb-32 lg:pt-44 flex flex-col lg:flex-row w-full justify-around items-center lg:items-baseline overflow-hidden gap-16 lg:gap-0 dark:bg-neutral-900 text-black dark:text-white bg-gradient-to-bl from-white via-violet-200 to-purple-600 dark:bg-gradient-to-br dark:from-neutral-700 dark:via-black dark:to-violet-950`}
       >
-        <section className="p-2 md:p-10 lg:p-2 lg:w-1/4 h-fit border border-black dark:border-white rounded-xl">
+        <section className="p-2 md:p-10 lg:p-5 lg:w-1/4 h-fit border border-black dark:border-white rounded-xl">
           <h1 className="text-center text-4xl">Crear Nueva Tarea</h1>
           <form
             onSubmit={handleSubmit}
-            className="flex flex-col gap-10 md:gap-7 pt-5 h-96 items-center"
+            className="flex flex-col gap-10 md:gap-7 pt-5 h-96 items-center justify-between"
           >
             <textarea
               name="description"
@@ -325,11 +330,12 @@ const WorkSpace = () => {
               </button>
               {calendarOpen && (
                 <div>
-                  <div className={`w-3/5 lg:w-2/5 h-fit lg:h-2/5 p-5 absolute inset-0 m-auto flex flex-col gap-10 bg-purple-300 items-center dark:text-black border border-black rounded-xl ${calendarClose ? styles.close : styles.open}`}>
-                    <button
-                      type="button"
-                      onClick={handleCalendarClose}
-                    >
+                  <div
+                    className={`w-3/5 lg:w-2/5 h-fit lg:h-1/2 p-5 absolute inset-0 m-auto flex flex-col gap-10 bg-purple-200 items-center dark:text-black border border-black rounded-xl ${
+                      calendarClose ? styles.close : styles.open
+                    }`}
+                  >
+                    <button type="button" onClick={handleCalendarClose}>
                       <CloseIcon />
                     </button>
                     <section>
@@ -346,63 +352,47 @@ const WorkSpace = () => {
                       <p>Selecciona una hora:</p>
                       <input type="time" onChange={handleHour} />
                     </section>
+                    <button
+                      type="button"
+                      className="p-1 rounded-lg bg-violet-500 hover:bg-purple-500 border-black border"
+                      onClick={() => {
+                        toast.success("Recordatorio agendado!", {duration: 1500});
+                        handleCalendarClose();
+                      }}
+                    >
+                      Aceptar
+                    </button>
                   </div>
                 </div>
               )}
             </div>
 
-            <div className="flex justify-around gap-10 md:gap-0 md:w-full">
+            <div className="flex justify-between gap-10 md:gap-0 w-3/4 md:w-full">
               <button
                 type="button"
                 onClick={handleColorOpen}
-                className="p-1 rounded-lg bg-red-400 hover:bg-red-500 dark:bg-red-900 dark:hover:bg-red-600 border-black dark:border-white border"
+                className="p-1 rounded-full bg-red-400 hover:bg-red-500 dark:bg-red-700 dark:hover:bg-red-600 border border-black dark:border-white text-transparent text-2xl"
               >
-                Color
+                {" "}
+                llm
               </button>
 
               {/* Cambiar el color de la task */}
               {colorOpen && (
-                // Hacer un componente de colores
-                <section className={`absolute m-auto inset-0 w-2/3 md:w-1/4 h-fit bg-lime-200 rounded-xl p-5 ${colorClose ? styles.close : styles.open}`}>
-                  <button type="button" onClick={handleColorClose}>
-                    <CloseIcon className="text-black" />
-                  </button>
-
-                  <div className="flex items-center justify-center gap-2">
-                    <button
-                      type="button"
-                      className="rounded-full border border-white text-transparent bg-red-200"
-                      onClick={() => {
-                        handleColor("#ec8383");
-                        handleColorClose();
-                      }}
-                    >
-                      red
-                    </button>
-                    <button
-                      type="button"
-                      className="rounded-full border border-white text-transparent bg-green-200"
-                      onClick={() => {
-                        handleColor("#91ec83");
-                        handleColorClose();
-                      }}
-                    >
-                      red
-                    </button>
-                    <button
-                      type="button"
-                      className="rounded-full border border-white text-transparent bg-blue-200"
-                      onClick={() => {
-                        handleColor("#8399ec");
-                        handleColorClose();
-                      }}
-                    >
-                      red
-                    </button>
-                  </div>
-                </section>
+                <ColorTask
+                  colorClose={colorClose}
+                  setColorClose={setColorClose}
+                  setColorOpen={setColorOpen}
+                  handleColor={handleColor}
+                  taskColor={task.color}
+                />
               )}
-              <button type="submit" className="p-1 rounded-lg bg-pink-400 hover:bg-pink-500 dark:bg-pink-900 dark:hover:bg-pink-600 border-black dark:border-white border">Agregar</button>
+              <button
+                type="submit"
+                className="p-1 rounded-lg bg-pink-400 hover:bg-pink-500 dark:bg-pink-900 dark:hover:bg-pink-600 border-black dark:border-white border"
+              >
+                Agregar
+              </button>
             </div>
           </form>
         </section>
@@ -451,9 +441,9 @@ const WorkSpace = () => {
           <article className="flex flex-col gap-16 md:flex-row md:gap-20 pt-5 p-10 lg:p-0">
             <div className="text-center flex flex-col gap-2">
               <h2>Urgente</h2>
-              <section className="flex p-4 border border-black dark:border-white rounded-xl h-96 w-44">
+              <section className="flex items-center border border-black dark:border-white rounded-xl w-44 justify-center">
                 {urgencyTask?.map((task) => (
-                  <main key={task.id}>
+                  <main key={task.id} className="w-full">
                     <UrgencyTask task={task} />
                   </main>
                 ))}

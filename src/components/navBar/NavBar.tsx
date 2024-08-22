@@ -2,11 +2,11 @@ import { useState, useEffect } from "react";
 import logo from "../../assets/logo.png";
 import { Link } from "react-router-dom";
 import axiosURL from "../../axiosConfig/axiosURL";
-import Swal from "sweetalert2";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { logInUser, logOutUser } from "../../redux/slices/Users/userSlice";
 import DarkMode from "../DarkMode/DarkMode";
 import BurguerMenu from "../BurguerMenu/BurguerMenu";
+import { toast } from "sonner";
 
 const NavBar = () => {
   const dispatch = useAppDispatch();
@@ -42,6 +42,8 @@ const NavBar = () => {
   const handleLogIn = async (event: React.FormEvent) => {
     try {
       event.preventDefault();
+      if (!userInfo.email.length) return toast.warning('Debes indicar tu correo');
+      if (!userInfo.password.length) return toast.warning('Debes indicar tu contraseña');
       const { data } = await axiosURL.post("/user/login", userInfo);
       const userLocaleStorage = {
         name: data.user.name,
@@ -52,25 +54,19 @@ const NavBar = () => {
         window.localStorage.setItem("User", JSON.stringify(userLocaleStorage));
         dispatch(logInUser(data));
         setUserInfo({ email: "", password: "" });
-        return Swal.fire({
-          icon: "success",
-          title: "Sesión iniciada con éxito!",
-          text: "Explora con total libertad",
-        });
+        return toast.success('Sesión inciada con éxito');
       }
     } catch (error) {
       if (error instanceof Error) console.error(error.message);
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Email o contraseña incorrecta/as.",
-      });
+      return toast.error('Oops...', {description: 'Algo salió mal, verifica los datos ingresados'});
+
     }
   };
 
   const handleLogOut = () => {
     dispatch(logOutUser());
     window.localStorage.clear();
+    toast.success('Sesión cerrada con éxito');
   };
 
   const handleScroll = (event: { preventDefault: () => void }) => {
