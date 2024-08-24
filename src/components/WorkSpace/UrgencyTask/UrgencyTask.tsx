@@ -3,6 +3,8 @@ import axiosURL from "../../../axiosConfig/axiosURL";
 import { getTasksAPI } from "../../../redux/slices/Tasks/taskSlice";
 import { useAppDispatch } from "../../../redux/store";
 import { Task } from "../../../types";
+import NewReleasesIcon from '@mui/icons-material/NewReleases';
+import './urgencyTask.module.css';
 
 interface Prop {
     task: Task;
@@ -28,24 +30,31 @@ const UrgencyTask: React.FC<Prop> = ({ task }) => {
   return (
     <main>
       <section
-        key={task.id}
-        className="flex flex-col rounded-xl border-2 border-black justify-evenly lg:justify-around h-80 p-2 text-black"
-        style={{ backgroundColor: task.color }}
-      >
-        <p className="text-2xl">{task.description}</p>
-        <div className="border border-black w-10/12 mx-auto"></div>
-        <p>
-          Debe estar lista para: <br></br>
-          {new Date(task?.reminder).toLocaleString("es-ES", {
-            // year: "numeric",
-            month: "long",
-            day: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
-        </p>
-        <button onClick={() => handleComplete(task.id)}>Completar Tarea</button>
-      </section>
+  key={task.id}
+  className="flex flex-col rounded-xl border-2 border-black items-center gap-6 h-96 p-4 text-black"
+  style={{ backgroundColor: task.color }}
+>
+  <p className="text-2xl text-center w-full break-words p-1 overflow-y-auto">
+    {task.description}
+  </p>
+  <NewReleasesIcon fontSize="small"/>
+  <div className="border border-black w-10/12 mx-auto"></div>
+  <p className="text-center">
+    Debe estar lista para: <br />
+    {new Date(task?.reminder).toLocaleString("es-ES", {
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    })}
+  </p>
+  <button onClick={() => handleComplete(task.id)} className="text-center p-2 anim">
+    Completar Tarea
+    {/* animacion */}
+  {/* <div className={` border border-black h-fit mt-1`}></div> */}
+  </button>
+</section>
+
     </main>
   );
 };

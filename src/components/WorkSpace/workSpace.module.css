@@ -37,3 +37,31 @@ textarea {
         transform: scale(0);
     }
 }
+
+article {
+    --sb-track-color: #232323;
+    --sb-thumb-color: #616161;
+    --sb-size: 4px;
+  }
+  
+  article::-webkit-scrollbar {
+    width: var(--sb-size)
+  }
+  
+  article::-webkit-scrollbar-track {
+    background: var(--sb-track-color);
+    border-radius: 5px;
+  }
+  
+  article::-webkit-scrollbar-thumb {
+    background: var(--sb-thumb-color);
+    border-radius: 5px;
+    
+  }
+  
+  @supports not selector(::-webkit-scrollbar) {
+    article {
+      scrollbar-color: var(--sb-thumb-color)
+                       var(--sb-track-color);
+    }
+  }

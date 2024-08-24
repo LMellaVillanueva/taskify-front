@@ -18,6 +18,8 @@ import UrgencyTask from "./UrgencyTask/UrgencyTask";
 //Css & Icons
 import styles from "./workSpace.module.css";
 import CloseIcon from "@mui/icons-material/Close";
+import NewReleasesIcon from '@mui/icons-material/NewReleases';
+import LabelImportantIcon from '@mui/icons-material/LabelImportant';
 
 //!DragAndDrop
 import { closestCenter, DndContext } from "@dnd-kit/core";
@@ -165,6 +167,13 @@ const WorkSpace = () => {
         toast.warning('Oops...' ,{
           description: 'Las tareas deben tener una descripción válida'
         })
+        return;
+      }
+      if (allTasks.some((aTask) => aTask.description === task.description)) {
+        toast.warning('Oops...' ,{
+          description: 'Esta tarea ya existe'
+        })
+        return;
       }
       const exactReminder = new Date(reminder.getTime());
       const { data } = await axiosURL.post("/task", task);
@@ -289,34 +298,37 @@ const WorkSpace = () => {
               className={`w-4/5 md:w-full md:max-w-56 border border-black dark:border-white rounded-xl text-black p-1 ${styles.textarea}`}
             ></textarea>
             <div className="flex justify-around items-center gap-10 md:gap-0 w-4/6 md:w-full">
-              <button type="button" onClick={handleUrgency} name="urgency">
-                Urgente
+              <button type="button" onClick={handleUrgency} name="urgency"  className="p-1 rounded-lg bg-red-500 hover:bg-red-700 dark:bg-red-950 dark:hover:bg-red-900 py-5 px-3 border-black hover:shadow-sm hover:shadow-black dark:hover:shadow-white border focus:bg-red-700 focus:shadow-white">
+                <NewReleasesIcon fontSize="small"/> Urgente
               </button>
-              <div className="flex flex-col">
+              <div className="flex flex-col items-center">
                 <p>Importancia</p>
                 <button
                   type="button"
                   onClick={handleImportancy}
                   name={Important.HIGH}
                   value={Important.HIGH}
+                  className="p-1 rounded-lg w-28 text-start bg-green-500 hover:bg-green-700 dark:bg-red-950 dark:hover:bg-red-900 border-black hover:shadow-sm hover:shadow-black dark:hover:shadow-white border focus:bg-green-700"
                 >
-                  HIGH
+                  <LabelImportantIcon/>HIGH
                 </button>
                 <button
                   type="button"
                   onClick={handleImportancy}
                   name={Important.MEDIUM}
                   value={Important.MEDIUM}
+                  className="p-1 rounded-lg w-28 text-start bg-yellow-500 hover:bg-yellow-600 dark:bg-red-950 dark:hover:bg-red-900 border-black hover:shadow-sm hover:shadow-black dark:hover:shadow-white border focus:bg-yellow-600"
                 >
-                  MEDIUM
+                  <LabelImportantIcon/>MEDIUM
                 </button>
                 <button
                   type="button"
                   onClick={handleImportancy}
                   name={Important.LOW}
                   value={Important.LOW}
+                  className="p-1 rounded-lg w-28 text-start bg-blue-500 hover:bg-blue-700 dark:bg-red-950 dark:hover:bg-red-900 border-black hover:shadow-sm hover:shadow-black dark:hover:shadow-white border focus:bg-blue-700"
                 >
-                  LOW
+                  <LabelImportantIcon/>LOW
                 </button>
               </div>
             </div>
@@ -324,7 +336,7 @@ const WorkSpace = () => {
               <button
                 type="button"
                 onClick={handleCalendarOpen}
-                className="p-1 rounded-lg bg-violet-500 hover:bg-purple-500 dark:bg-violet-900 dark:hover:bg-purple-600 border-black dark:border-white border"
+                className="p-1 rounded-lg bg-violet-500 hover:bg-violet-700 dark:bg-violet-950 dark:hover:bg-purple-900 border-black border hover:shadow-sm hover:shadow-black dark:hover:shadow-white"
               >
                 Recordatorio
               </button>
@@ -371,7 +383,7 @@ const WorkSpace = () => {
               <button
                 type="button"
                 onClick={handleColorOpen}
-                className="p-1 rounded-full bg-red-400 hover:bg-red-500 dark:bg-red-700 dark:hover:bg-red-600 border border-black dark:border-white text-transparent text-2xl"
+                className="p-1 rounded-full bg-red-400 hover:bg-red-500 dark:bg-red-900 dark:hover:bg-red-800 border border-black text-transparent text-2xl hover:shadow-sm hover:shadow-black dark:hover:shadow-white"
               >
                 {" "}
                 llm
@@ -389,7 +401,7 @@ const WorkSpace = () => {
               )}
               <button
                 type="submit"
-                className="p-1 rounded-lg bg-pink-400 hover:bg-pink-500 dark:bg-pink-900 dark:hover:bg-pink-600 border-black dark:border-white border"
+                className="p-2 rounded-lg bg-pink-400 hover:bg-pink-500 dark:bg-pink-950 dark:hover:bg-pink-900 border-black border hover:shadow-sm hover:shadow-black dark:hover:shadow-white"
               >
                 Agregar
               </button>
@@ -409,21 +421,21 @@ const WorkSpace = () => {
           {descriptionNotCreated.length > 0 && importantTasks.length <= 0 && (
             <form
               onSubmit={handleSubmit}
-              className="border border-black dark:border-white rounded-xl flex flex-col items-center justify-evenly p-3 h-72"
+              className="border border-black dark:border-white rounded-xl flex flex-col items-center justify-evenly p-3 h-72 animate-fade"
             >
               <h3>¿Quieres crear esta tarea?</h3>
               <input
                 type="text"
                 placeholder={descriptionNotCreated}
-                className="text-black"
+                className="text-black rounded-lg p-1"
                 onChange={handleNewTaskSearchDescription}
                 value={descriptionNotCreated}
               />
-              <button onClick={handleUrgency}>Urgencia</button>
+              <button onClick={handleUrgency}>Urgente</button>
               <select
                 name="important"
                 id=""
-                className="text-black dark:text-white"
+                className="text-black p-1 rounded-lg"
                 onClick={handleImportancy}
               >
                 <option value={Important.HIGH}>Importancia</option>
@@ -431,17 +443,27 @@ const WorkSpace = () => {
                 <option value={Important.MEDIUM}>MEDIUM</option>
                 <option value={Important.LOW}>LOW</option>
               </select>
-              <button type="submit">Crear</button>
+              <div className="flex justify-evenly w-full">
+              <button
+                type="button"
+                onClick={handleColorOpen}
+                className="p-1 rounded-full bg-red-400 hover:bg-red-500 dark:bg-red-900 dark:hover:bg-red-600 border border-black dark:border-white text-transparent text-lg"
+              >
+                {" "}
+                lmk
+              </button>
+              <button type="submit" className="p-1 rounded-lg bg-pink-400 hover:bg-pink-500 dark:bg-pink-900 dark:hover:bg-pink-600 border-black dark:border-white border">Crear</button>
+              </div>
             </form>
           )}
         </section>
 
-        <section className="p-3 h-fit border border-black dark:border-white rounded-xl">
+        <section className="p-4 border border-black dark:border-white rounded-xl lg:w-1/2">
           <h1 className="text-center text-4xl lg:pb-5">Mis Tareas</h1>
-          <article className="flex flex-col gap-16 md:flex-row md:gap-20 pt-5 p-10 lg:p-0">
+          <article className="flex flex-col items-center md:items-start justify-center gap-16 md:flex-row md:gap-15 pt-5 p-10 lg:p-0">
             <div className="text-center flex flex-col gap-2">
               <h2>Urgente</h2>
-              <section className="flex items-center border border-black dark:border-white rounded-xl w-44 justify-center">
+              <section className="flex items-center border border-black dark:border-white rounded-xl w-56 justify-center">
                 {urgencyTask?.map((task) => (
                   <main key={task.id} className="w-full">
                     <UrgencyTask task={task} />
@@ -450,7 +472,7 @@ const WorkSpace = () => {
               </section>
             </div>
 
-            <div className="border border-black dark:border-white w-full md:h-96"></div>
+            <div className="border border-black dark:border-white md:w-fit w-full md:h-96"></div>
 
             <DndContext
               collisionDetection={closestCenter}
@@ -464,7 +486,7 @@ const WorkSpace = () => {
                   <h2>Importancia</h2>
                   <article
                     key={task.id}
-                    className="flex flex-col items-center justify-around h-96 border border-black dark:border-white rounded-xl p-4 w-48 overflow-y-auto dark:text-black"
+                    className="flex flex-col items-center justify-around h-96 border border-black dark:border-white rounded-xl p-4 w-44 md:w-72 overflow-y-auto dark:text-black"
                   >
                     {importantTasks?.map((task) => (
                       <main key={task.id}>
