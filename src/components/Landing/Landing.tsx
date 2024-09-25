@@ -2,8 +2,12 @@ import NavBar from "../navBar/NavBar";
 import taskify1 from "../../assets/taskify1.png";
 import Footer from "../Footer/Footer";
 import { Link } from "react-router-dom";
+import { useAppSelector } from "../../redux/store";
 
 const Landing = () => {
+
+  const user = useAppSelector(state => state.User.user);
+
   return (
     <>
       <NavBar />
@@ -22,9 +26,15 @@ const Landing = () => {
               Pon un fin a la planificación convencional. Con Taskify podrás
               ordenar tu día, semana e incluso tu mes! Gracias al modelo
               productivo y organizacional de su <b></b>
+              {user.length === 0 ? (
+              <span className="underline cursor-pointer">
+                <Link to={"/crearCuenta"}>Creación de Tareas.</Link>
+              </span>
+              ) : (
               <span className="underline cursor-pointer">
                 <Link to={"/workSpace"}>Creación de Tareas.</Link>
               </span>
+              )}
             </p>
           </div>
           <img src={taskify1} alt="image" className={`w-96 lg:w-5/12`} />
@@ -34,9 +44,15 @@ const Landing = () => {
           <h2 className="text-4xl pb-5 text-center">
             Comienza tu Creación de Tareas aquí
           </h2>
+          {user.length === 0 ? (
+          <Link to={"/crearCuenta"}>
+            <button>Comienza Ya!</button>
+          </Link>
+          ) : (
           <Link to={"/workSpace"}>
             <button>Comienza Ya!</button>
           </Link>
+          )}
         </section>
 
         <article 

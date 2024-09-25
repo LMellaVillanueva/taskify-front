@@ -4,6 +4,7 @@ import axiosURL from "../../axiosConfig/axiosURL";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import {
   getTasksAPI,
+  getTasksDeletedAPI,
   reOrderTasks,
   searchATask,
 } from "../../redux/slices/Tasks/taskSlice";
@@ -32,8 +33,7 @@ import {
 //!Selector de fechas
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-// import emailjs from "@emailjs/browser";
-// import Swal from "sweetalert2";
+import emailjs from "@emailjs/browser";
 
 //!Notificaciones
 import { toast } from "sonner";
@@ -43,9 +43,14 @@ const WorkSpace = () => {
   const dispatch = useAppDispatch();
 
   //!States
+  const user = useAppSelector((state) => state.User.user);
+  console.log(user)
   const allTasks = useAppSelector((state) => state.Task.allTasks);
-  const urgencyTask = allTasks.filter((task) => task.urgency === true);
-  const importantTasks = allTasks.filter((task) => task.urgency === false);
+  
+  const userTasks = allTasks.filter((task) => task.user?.id === user[0]?.id)
+
+  const urgencyTask = userTasks.filter((task) => task.urgency === true);
+  const importantTasks = userTasks.filter((task) => task.urgency === false);
   const [colorOpen, setColorOpen] = useState(false);
   const [colorClose, setColorClose] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
@@ -60,64 +65,81 @@ const WorkSpace = () => {
     elim: false,
     color: "white",
     reminder: new Date(),
+    userId: user[0]?.id,
   });
   const [reminder, setReminder] = useState(new Date());
   const [today, setToday] = useState(new Date());
-  // const [info, setInfo] = useState({
-  //   from_name: "Lucas",
-  //   from_email: "jiji@gmail.com",
-  //   message: "Recordatorio funcionando",
-  // });
+
+  const [info, setInfo] = useState<{
+    from_name: string;
+    to_email: string;
+    message: string;
+  }>({
+    from_name: "",
+    to_email: "",
+    message: "",
+  });
 
   useEffect(() => {
-    dispatch(getTasksAPI());
-  }, []);
+    setInfo({
+      ...info,
+      from_name: user[0]?.name,
+      to_email: user[0]?.email
+    })
+  }, [])
 
   //! comparar la fecha del recordatorio con la fecha actual
+  // useEffect(() => {
+  //   const intervalId = setInterval(async () => {
+  //     const today = new Date();
+  //     setToday(today);
+
+  //     const tasksDone: TasksList = [];
+
+  //     const deleteAfterReminder = userTasks.map((task) => {
+  //       const reminderDate = new Date(task.reminder);
+
+  //       if (reminderDate.getTime() <= today.getTime()) {
+  //         tasksDone.push(task);
+  //       }
+  //     });
+        //*No funciona pasarle el nombre de la tarea a mensaje
+  //     const taskNames = tasksDone.map((task) => task.description).join(', ');
+
+  //     setInfo({...info, message: taskNames})
+  //     console.log(info)
+
+  //     if (tasksDone.length) {
+  //       await emailjs
+  //         .send("service_ums6x4q", "template_w8rf65t", info, {
+  //           publicKey: "zADAsfTnn9pOJcyPO",
+  //         })
+  //         .then(
+  //           () => {
+  //             setInfo({ from_name: "", to_email: "", message: "" });
+  //           },
+  //           (error) => {
+  //             console.log("FAILED...", error.text);
+  //             toast.error('Algo salió mal...')
+  //           }
+  //         );
+  //     }
+  //     await Promise.all(deleteAfterReminder);
+  //   }, 60000); 
+
+  //   return () => clearInterval(intervalId);
+  // }, [userTasks]);
+
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      const today = new Date();
-      setToday(today);
-
-      const tasksDone: TasksList = [];
-
-      const deleteAfterReminder = allTasks.map(async (task) => {
-        const reminderDate = new Date(task.reminder);
-
-        if (reminderDate.getTime() <= today.getTime()) {
-          tasksDone.push(task);
-        }
-      });
-
-      if (tasksDone.length) {
-        // emailjs
-        //   .send("service_ums6x4q", "template_7sfakso", info, {
-        //     publicKey: "zADAsfTnn9pOJcyPO",
-        //   })
-        //   .then(
-        //     () => {
-        //       toast('Tarea finalizada', {
-        //         description: 'Has completado la tarea urgente.',
-        //         icon: <CheckIcon/>
-        //       })
-        //       setInfo({ from_name: "", from_email: "", message: "" });
-        //     },
-        //     (error) => {
-        //       console.log("FAILED...", error.text);
-        //       Swal.fire({
-        //         icon: "error",
-        //         title: "Algo salió mal!",
-        //         text: "Verifica los datos ingresados.",
-        //       });
-        //     }
-        //   );
+    const fetchTasks = async () => {
+      try {
+        await dispatch(getTasksAPI());
+      } catch (error) {
+      if (error instanceof Error) console.error(error.message);
       }
-      Promise.all(deleteAfterReminder);
-    }, 60000); // 60000ms = 1 minuto
-
-    // Cleanup interval when the component is unmounted
-    return () => clearInterval(intervalId);
-  }, [allTasks]);
+    }
+    fetchTasks();
+  }, [])
 
   //!Functions
   const handleDescription = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -159,6 +181,7 @@ const WorkSpace = () => {
     });
   };
 
+
   const handleSubmit = async (event: React.FormEvent): Promise<void> => {
     try {
       event.preventDefault();
@@ -195,6 +218,7 @@ const WorkSpace = () => {
           elim: false,
           color: "white",
           reminder: new Date(),
+          userId: user[0]?.id,
         });
         await dispatch(getTasksAPI());
         setDescriptionNotCreated("");
@@ -215,6 +239,7 @@ const WorkSpace = () => {
       setTask({ ...task, description });
     } else {
       await dispatch(getTasksAPI());
+      await dispatch(getTasksDeletedAPI());
       setTask({ ...task, description: "" });
       setDescriptionNotCreated("");
     }
@@ -232,7 +257,7 @@ const WorkSpace = () => {
   };
 
   const handleDateReminder = async (date: Date | null, event: any) => {
-    event.preventDefault();
+    await event.preventDefault();
     today.setUTCHours(0, 0, 0, 0);
 
     if (date) {
@@ -268,7 +293,7 @@ const WorkSpace = () => {
     setCalendarClose(true);
     setTimeout(() => {
       setCalendarOpen(false);
-    }, 500);
+    }, 300);
   };
 
   const handleColorOpen = () => {

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import logo from "../../assets/logo.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axiosURL from "../../axiosConfig/axiosURL";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { logInUser, logOutUser } from "../../redux/slices/Users/userSlice";
@@ -10,10 +10,12 @@ import { toast } from "sonner";
 
 const NavBar = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const user = useAppSelector((state) => state.User.user);
 
   //Creación de cuentas
   const [userInfo, setUserInfo] = useState({
+    id: '',
     email: "",
     password: "",
   });
@@ -46,14 +48,16 @@ const NavBar = () => {
       if (!userInfo.password.length) return toast.warning('Debes indicar tu contraseña');
       const { data } = await axiosURL.post("/user/login", userInfo);
       const userLocaleStorage = {
+        id: data.user.id,
         name: data.user.name,
         email: data.user.email,
+        tasks: data.user.tasks,
       };
       if (data) {
         dispatch(logOutUser());
         window.localStorage.setItem("User", JSON.stringify(userLocaleStorage));
-        dispatch(logInUser(data));
-        setUserInfo({ email: "", password: "" });
+        dispatch(logInUser(userLocaleStorage));
+        setUserInfo({ id: '', email: "", password: "" });
         return toast.success('Sesión inciada con éxito');
       }
     } catch (error) {
@@ -67,6 +71,7 @@ const NavBar = () => {
     dispatch(logOutUser());
     window.localStorage.clear();
     toast.success('Sesión cerrada con éxito');
+    return navigate('/')
   };
 
   const handleScroll = (event: { preventDefault: () => void }) => {
@@ -108,9 +113,17 @@ const NavBar = () => {
           <li className="hover:underline">
             <Link to={"/"}>Inicio</Link>
           </li>
+            {user.length == 0 ? (
+              <div>
+          <li className="hover:underline">
+            <Link to={"/crearCuenta"}>Creación</Link>
+          </li>
+              </div>
+            ) : (
           <li className="hover:underline">
             <Link to={"/workSpace"}>Creación</Link>
           </li>
+            )}
           <li>
             <button
               onClick={handleScroll}
@@ -209,7 +222,7 @@ const NavBar = () => {
         ) : (
           <section className="flex items-center justify-around p-1 w-1/2 md:w-full gap-4 md:gap-10 lg:w-1/5">
             <h2 className="text-xs md:text-sm w-full lg:text-xl text-center">
-              Bienvenido/a de nuevo {user[0].name}!
+              Bienvenido/a {user[0].name}!
             </h2>
             <button onClick={handleLogOut}>Cerrar Sesión</button>
           </section>

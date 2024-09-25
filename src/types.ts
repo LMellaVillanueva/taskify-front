@@ -13,9 +13,12 @@ export interface Task {
     elim: boolean
     color: string
     reminder: Date
+    userId: string
+    user?: User
 }
 
 export interface User {
+    id: string
     name: string
     email: string
     password: string

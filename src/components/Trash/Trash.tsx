@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import NavBar from "../navBar/NavBar";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
-import { getTasksDeletedAPI } from "../../redux/slices/Tasks/taskSlice";
+import { getTasksAPI, getTasksDeletedAPI, searchATask } from "../../redux/slices/Tasks/taskSlice";
 import axiosURL from "../../axiosConfig/axiosURL";
 import { Link } from "react-router-dom";
 import Footer from "../Footer/Footer";
@@ -9,11 +9,11 @@ import Footer from "../Footer/Footer";
 const Trash = () => {
   const dispatch = useAppDispatch();
   const [mediumScreen, setMediumScreen] = useState(window.innerWidth <= 1024);
-  const tasksDeleted = useAppSelector((state) => state.Task.tasksDeleted);
-  console.log(tasksDeleted);
-
+  const user = useAppSelector(state => state.User.user);
+  const deleteTasks = useAppSelector((state) => state.Task.tasksDeleted);
+  const tasksDeleted = deleteTasks.filter((task) => task.user?.id === user[0]?.id)
+  
   useEffect(() => {
-    dispatch(getTasksDeletedAPI());
     const handleResize = () => {
       setMediumScreen(window.innerWidth <= 1024);
     };
@@ -25,106 +25,180 @@ const Trash = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        await dispatch(getTasksDeletedAPI());
+      } catch (error) {
+        if (error instanceof Error) console.error(error.message);
+      }
+    };
+    fetchTasks();
+  }, []);
+
   const handleElim = async (id: number): Promise<void> => {
     try {
       const { data } = await axiosURL.delete(`/task/${id}`);
-      if(data) {
+      if (data) {
         await dispatch(getTasksDeletedAPI());
       }
     } catch (error) {
       if (error instanceof Error) console.error(error.message);
     }
-  }
+  };
 
-   const handleRestore = async (id:number): Promise<void> => {
+  const handleRestore = async (id: number): Promise<void> => {
     try {
       const { data } = await axiosURL.put(`/task/${id}`, { elim: false });
-      if(data) {
+      if (data) {
         await dispatch(getTasksDeletedAPI());
       }
     } catch (error) {
       if (error instanceof Error) console.error(error.message);
     }
-   }
+  };
+
+  const handleSearch = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ): Promise<void> => {
+    let description = event.target.value;
+    if (description.length) {
+      dispatch(searchATask(description.toUpperCase()));
+    } else {
+      await dispatch(getTasksDeletedAPI());
+      await dispatch(getTasksAPI());
+    }
+  };
 
   return (
     <>
       <NavBar />
       {mediumScreen ? (
         <>
-          <main className="pt-28 md:pt-52 flex flex-col items-center gap-24 dark:bg-neutral-900 dark:text-white">
-            <h1 className="text-center">Tareas Completadas</h1>
-            <input type="text" placeholder="Buscar tarea..." className="w-72" />
-            <section className="w-5/6">
-              {tasksDeleted?.map((task) => (
-                <article
-                  key={task.id}
-                  className="border border-black dark:border-white rounded-xl p-5 flex flex-col items-center gap-5 mb-5"
-                >
-                  <p>{task.description}</p>
-                  <div className="border border-black dark:border-white rounded-xl w-1/2"></div>
-                  <p>Importancia: {task.important}</p>
-                  <div className="border border-black dark:border-white rounded-xl w-1/3"></div>
-                  <p>
-                    {new Date(task?.date).toLocaleString("es-ES", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </p>
-                  <div className="flex justify-between w-full">
-                    <button onClick={() => handleRestore(task.id)}>Restaurar</button>
-                    <button onClick={() => handleElim(task.id)}>Eliminar</button>
-                  </div>
-                </article>
-              ))}
-            </section>
-          </main>
-        <Footer/>
-        </>
-      ) : (
-        <>
-          <main className="pt-40 flex flex-col gap-20 pb-10 dark:bg-neutral-900 dark:text-white">
-            <header className="flex justify-evenly">
-              <Link to={'/workSpace'}>
-                Back
-              </Link>
-              <input
-                type="text"
-                className="w-96"
-                placeholder="Buscar tarea..."
-              />
-              <h1>Tareas Completadas</h1>
-            </header>
+          <main className="pt-64 md:pt-52 py-10 flex flex-col items-center gap-24 text-black bg-gradient-to-bl from-white via-violet-200 to-purple-600 dark:bg-gradient-to-br dark:from-neutral-700 dark:via-black dark:to-violet-950">
+            <h1 className="text-center text-4xl text-black dark:text-white">
+              Tareas Completadas
+            </h1>
+            <div className="flex p-5 w-4/5 gap-8 justify-center">
 
-            <article className="w-4/6 m-auto">
-              {tasksDeleted?.map((task) => (
-                <section
-                  key={task.id}
-                  className="border border-black dark:border-white rounded-xl p-8 flex items-center justify-evenly gap-3 mb-5"
-                >
-                  <p className="border border-black dark:border-white rounded-xl w-5/6 h-36 p-5 text-wrap">{task.description}</p>
-
-                  <div className="flex flex-col mx-10 items-center gap-3 text-center">
-                  <p>Importancia: {task.important}</p>
-                  <div className="border border-black dark:border-white rounded-xl w-full"></div>
-                  <p>
-                    {new Date(task?.date).toLocaleString("es-ES", {
+            <input
+            onChange={handleSearch}
+            type="text"
+            placeholder="Buscar tarea..."
+            className="rounded-xl p-1 text-black border border-black w-72"
+            />
+            <Link to={"/workSpace"} className="dark:text-white text-lg px-5 py-2 rounded-xl bg-neutral-900 hover:bg-stone-700 text-white border-white border">
+              Volver
+            </Link>
+            </div>
+            <section className="w-5/6 p-5 md:p-10">
+              {tasksDeleted.length ? (
+                tasksDeleted.map((task) => (
+                  <article
+                    key={task.id}
+                    className="border border-black rounded-xl p-5 flex flex-col items-center gap-5 mb-5"
+                    style={{ backgroundColor: task.color }}
+                  >
+                    <p className="font-medium text-xl">{task.description}</p>
+                    <div className="border border-black rounded-xl w-3/4"></div>
+                    <p>Importancia: {task.important}</p>
+                    <div className="border border-black rounded-xl w-1/2"></div>
+                    <p>
+                      Creada el: <b></b>
+                      {new Date(task?.date).toLocaleString("es-ES", {
                         year: "numeric",
                         month: "long",
                         day: "numeric",
-                    })}
-                  </p>
+                      })}
+                    </p>
+                    <div className="flex justify-between w-full">
+                      <button
+                        onClick={() => handleRestore(task.id)}
+                        className="m-auto mt-3 px-5 py-2 rounded-xl bg-neutral-900 hover:bg-stone-700 text-white border-white border"
+                      >
+                        Restaurar
+                      </button>
+                      <button
+                        onClick={() => handleElim(task.id)}
+                        className="m-auto mt-3 px-5 py-2 rounded-xl bg-neutral-900 hover:bg-stone-700 text-white border-white border"
+                      >
+                        Eliminar
+                      </button>
                     </div>
-                  <div className="flex flex-col gap-5 items-center">
-                    <button onClick={() => handleRestore(task.id)}>Restaurar</button>
-                    <button onClick={() => handleElim(task.id)}>Eliminar</button>
-                  </div>
-                </section>
-              ))}
+                  </article>
+                ))
+              ) : (
+                <article className="border border-black dark:border-white rounded-xl p-5 flex flex-col items-center gap-5 mb-5 py-5 text-black dark:text-white">
+                  No hay tareas completas...
+                </article>
+              )}
+            </section>
+          </main>
+          <Footer />
+        </>
+      ) : (
+        <>
+          <main className="pt-40 flex flex-col gap-20 py-10 text-black bg-gradient-to-bl from-white via-violet-200 to-purple-600 dark:bg-gradient-to-br dark:from-neutral-700 dark:via-black dark:to-violet-950">
+            <header className="flex justify-evenly">
+              <h1 className="text-4xl text-black dark:text-white">
+                Tareas Completadas
+              </h1>
+              <input
+            onChange={handleSearch}
+                type="text"
+                className="w-96 rounded-xl p-1 text-black border border-black"
+                placeholder="Buscar tarea..."
+              />
+              <Link to={"/workSpace"} className="dark:text-white text-lg px-5 py-2 rounded-xl bg-neutral-900 hover:bg-stone-700 text-white border-white border">
+                Volver
+              </Link>
+            </header>
+
+            <article className="w-4/6 m-auto p-5 md:p-10">
+              {tasksDeleted.length ? (
+                tasksDeleted.map((task) => (
+                  <article
+                    key={task.id}
+                    className="border border-black rounded-xl p-5 flex flex-col items-center gap-5 mb-5 py-5"
+                    style={{ backgroundColor: task.color }}
+                  >
+                    <p className="font-medium text-2xl">{task.description}</p>
+                    <div className="border border-black rounded-xl w-1/2"></div>
+                    <p>Importancia: {task.important}</p>
+                    <div className="border border-black rounded-xl w-1/3"></div>
+                    <p>
+                      {" "}
+                      Creada el: <b></b>
+                      {new Date(task?.date).toLocaleString("es-ES", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                    </p>
+                    <div className="flex justify-between w-full">
+                      <button
+                        onClick={() => handleRestore(task.id)}
+                        className="m-auto mt-3 px-5 py-2 rounded-xl bg-neutral-900 hover:bg-stone-700 text-white border-white border"
+                      >
+                        Restaurar
+                      </button>
+                      <button
+                        onClick={() => handleElim(task.id)}
+                        className="m-auto mt-3 px-5 py-2 rounded-xl bg-neutral-900 hover:bg-stone-700 text-white border-white border"
+                      >
+                        Eliminar
+                      </button>
+                    </div>
+                  </article>
+                ))
+              ) : (
+                <article className="border border-black dark:border-white rounded-xl p-5 flex flex-col items-center gap-5 mb-5 text-black dark:text-white">
+                  No hay tareas completas...
+                </article>
+              )}
             </article>
           </main>
-        <Footer/>
+          <Footer />
         </>
       )}
     </>

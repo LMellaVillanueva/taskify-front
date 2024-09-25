@@ -8,8 +8,25 @@ import { Toaster } from 'sonner';
 import CheckIcon from "@mui/icons-material/Check";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import WarningIcon from '@mui/icons-material/Warning';
+import { useEffect } from 'react';
+import { useAppDispatch } from './redux/store';
+import { getTasksAPI, getTasksDeletedAPI } from './redux/slices/Tasks/taskSlice';
 
 function App() {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        await dispatch(getTasksAPI());
+        await dispatch(getTasksDeletedAPI());
+      } catch (error) {
+      if (error instanceof Error) console.error(error.message);
+      }
+    }
+    fetchTasks();
+  }, [])
+
   return (
     <>
       <BrowserRouter>

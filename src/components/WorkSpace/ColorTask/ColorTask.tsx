@@ -24,20 +24,20 @@ const ColorTask: React.FC<Props> = ({
     setColorClose(true);
     setTimeout(() => {
       setColorOpen(false);
-    }, 500);
+    }, 300);
   };
 
   const colors = [
-    { icon: <CircleIcon className="text-red-300 dark:text-red-800"fontSize="large"/> ,color: darkMode === "dark" ? "#991b1b" : "#fca5a5" },
-    { icon:  <CircleIcon className="text-green-300 dark:text-green-800"fontSize="large"/> ,color: darkMode === "dark" ? "#166534" : "#86efac" },
-    { icon:  <CircleIcon className="text-blue-300 dark:text-blue-800"fontSize="large"/> ,color: darkMode === "dark" ? "#1e40af" : "#93c5fd" },
-    { icon:  <CircleIcon className="text-amber-300 dark:text-amber-800"fontSize="large"/> ,color: darkMode === "dark" ? "#92400e" : "#fcd34d" },
-    { icon:  <CircleIcon className="text-cyan-300 dark:text-cyan-800"fontSize="large"/> ,color: darkMode === "dark" ? "#0e7490" : "#67E8F9" },
-    { icon:  <CircleIcon className="text-indigo-300 dark:text-indigo-800"fontSize="large"/> ,color: darkMode === "dark" ? "#3730a3" : "#A5B4FC" },
-    { icon:  <CircleIcon className="text-lime-300 dark:text-lime-800"fontSize="large"/> ,color: darkMode === "dark" ? "#4d7c0f" : "#BEEB64" },
-    { icon:  <CircleIcon className="text-violet-300 dark:text-violet-800"fontSize="large"/> ,color: darkMode === "dark" ? "#5b21b6" : "#C4B5FD" },
-    { icon:  <CircleIcon className="text-purple-300 dark:text-purple-800"fontSize="large"/> ,color: darkMode === "dark" ? "#6b21a8" : "#D8B4FE" },
-    { icon:  <CircleIcon className="text-pink-300 dark:text-pink-800"fontSize="large"/> ,color: darkMode === "dark" ? "#9d174d" : "F9A8D4" },
+    { icon: <CircleIcon className="text-red-400 dark:text-red-600"fontSize="large"/> ,color: darkMode === "dark" ? "#dc2626" : "#f87171" },
+    { icon:  <CircleIcon className="text-green-400 dark:text-green-600"fontSize="large"/> ,color: darkMode === "dark" ? "#16a34a" : "#4ade80" },
+    { icon:  <CircleIcon className="text-blue-400 dark:text-blue-600"fontSize="large"/> ,color: darkMode === "dark" ? "#2563eb" : "#60a5fa" },
+    { icon:  <CircleIcon className="text-amber-400 dark:text-amber-600"fontSize="large"/> ,color: darkMode === "dark" ? "#97706" : "#fbbf24" },
+    { icon:  <CircleIcon className="text-cyan-400 dark:text-cyan-600"fontSize="large"/> ,color: darkMode === "dark" ? "#0891b2 " : "#22d3ee" },
+    { icon:  <CircleIcon className="text-indigo-400 dark:text-indigo-600"fontSize="large"/> ,color: darkMode === "dark" ? "#4f46e5" : "#818cf8" },
+    { icon:  <CircleIcon className="text-lime-400 dark:text-lime-600"fontSize="large"/> ,color: darkMode === "dark" ? "#65a30d" : "#a3e635" },
+    { icon:  <CircleIcon className="text-violet-400 dark:text-violet-600"fontSize="large"/> ,color: darkMode === "dark" ? "#7c3aed" : "#a78bfa" },
+    { icon:  <CircleIcon className="text-purple-400 dark:text-purple-600"fontSize="large"/> ,color: darkMode === "dark" ? "#9333ea" : "#c084fc" },
+    { icon:  <CircleIcon className="text-pink-400 dark:text-pink-600"fontSize="large"/> ,color: darkMode === "dark" ? "#db2777" : "#f472b6" },
   ];
 
   return (

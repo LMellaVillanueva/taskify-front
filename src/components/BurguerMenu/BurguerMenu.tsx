@@ -4,10 +4,10 @@ import { Link } from "react-router-dom";
 import DarkMode from "../DarkMode/DarkMode";
 import axiosURL from "../../axiosConfig/axiosURL";
 import { logInUser, logOutUser } from "../../redux/slices/Users/userSlice";
-import Swal from "sweetalert2";
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import styles from './burgerMenu.module.css';
+import { toast } from "sonner";
 
 const BurguerMenu = () => {
   const user = useAppSelector((state) => state.User.user);
@@ -64,19 +64,12 @@ const BurguerMenu = () => {
         window.localStorage.setItem("User", JSON.stringify(userLocaleStorage));
         dispatch(logInUser(data));
         setUserInfo({ email: "", password: "" });
-        return Swal.fire({
-          icon: "success",
-          title: "Sesión iniciada con éxito!",
-          text: "Explora con total libertad",
-        });
+        toast.success('Sesión iniciada con éxito!');
       }
     } catch (error) {
       if (error instanceof Error) console.error(error.message);
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Email o contraseña incorrecta/as.",
-      });
+      toast.error("Oops...", { description: "Email y/o contraseña incorrectas." });
+      
     }
   };
 

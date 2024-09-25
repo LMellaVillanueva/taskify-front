@@ -25,11 +25,15 @@ export const TaskSlice = createSlice({
     },
     getTasksDeleted: (state, action) => {
       state.tasksDeleted = [...action.payload];
+      state.searchTasks = [...action.payload];
     },
     searchTasks: (state, action) => {
       state.allTasks = state.searchTasks.filter((task) => {
         return task.description.toUpperCase().startsWith(action.payload);
       });
+      state.tasksDeleted = state.searchTasks.filter((task) => {
+        return task.description.toUpperCase().startsWith(action.payload);
+      })
     },
     newOrder: (state, action) => {
       state.allTasks = [...action.payload];
