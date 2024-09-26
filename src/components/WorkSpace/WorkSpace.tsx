@@ -89,46 +89,49 @@ const WorkSpace = () => {
   }, [])
 
   //! comparar la fecha del recordatorio con la fecha actual
-  // useEffect(() => {
-  //   const intervalId = setInterval(async () => {
-  //     const today = new Date();
-  //     setToday(today);
-
-  //     const tasksDone: TasksList = [];
-
-  //     const deleteAfterReminder = userTasks.map((task) => {
-  //       const reminderDate = new Date(task.reminder);
-
-  //       if (reminderDate.getTime() <= today.getTime()) {
-  //         tasksDone.push(task);
-  //       }
-  //     });
-        //*No funciona pasarle el nombre de la tarea a mensaje
-  //     const taskNames = tasksDone.map((task) => task.description).join(', ');
-
-  //     setInfo({...info, message: taskNames})
-  //     console.log(info)
-
-  //     if (tasksDone.length) {
-  //       await emailjs
-  //         .send("service_ums6x4q", "template_w8rf65t", info, {
-  //           publicKey: "zADAsfTnn9pOJcyPO",
-  //         })
-  //         .then(
-  //           () => {
-  //             setInfo({ from_name: "", to_email: "", message: "" });
-  //           },
-  //           (error) => {
-  //             console.log("FAILED...", error.text);
-  //             toast.error('Algo salió mal...')
-  //           }
-  //         );
-  //     }
-  //     await Promise.all(deleteAfterReminder);
-  //   }, 60000); 
-
-  //   return () => clearInterval(intervalId);
-  // }, [userTasks]);
+  useEffect(() => {
+    const intervalId = setInterval(async () => {
+      const today = new Date();
+      setToday(today);
+  
+      const tasksDone: TasksList = [];
+  
+      userTasks.forEach((task) => {
+        const reminderDate = new Date(task.reminder);
+        if (reminderDate.getTime() <= today.getTime()) {
+          tasksDone.push(task);
+        }
+      });
+  
+      const taskNames = tasksDone.map((task) => task.description).join(', ');
+  
+      if (tasksDone.length) {
+        const updatedInfo = { ...info, message: taskNames };
+  
+        setInfo(updatedInfo);
+        console.log(updatedInfo)
+  
+        await emailjs
+          .send("service_ums6x4q", "template_w8rf65t", updatedInfo, {
+            publicKey: "zADAsfTnn9pOJcyPO",
+          })
+          .then(
+            () => {
+              setInfo({ ...info, message: "" });
+            },
+            (error) => {
+              console.log("FAILED...", error.text);
+              toast.error('Algo salió mal...');
+            }
+          );
+      }
+      //*Eliminar tarea después de mandar el recordatorio
+  
+    }, 60000);
+  
+    return () => clearInterval(intervalId);
+  }, [userTasks, info]);
+  
 
   useEffect(() => {
     const fetchTasks = async () => {
