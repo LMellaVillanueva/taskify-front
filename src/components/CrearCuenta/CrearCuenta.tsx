@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import Footer from "../Footer/Footer";
-import NavBar from "../navBar/NavBar";
 import axiosURL from "../../axiosConfig/axiosURL";
 import { useAppDispatch } from "../../redux/store";
 import { logInUser, logOutUser } from "../../redux/slices/Users/userSlice";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const CrearCuenta = () => {
   const dispatch = useAppDispatch();
@@ -54,19 +54,25 @@ const CrearCuenta = () => {
     }
   };
 
+  const caro = () => {
+    return navigate('/');
+  }
+
   return (
     <>
-      <NavBar />
-      <main className="flex flex-col dark:bg-neutral-900 text-black dark:text-white pt-64 md:pt-44 lg:pt-32">
-        <section className="flex flex-col justify-evenly border border-white h-screen p-4 bg-gradient-to-b from-white to-purple-600 text-center">
-          <h1 className="text-center text-4xl text-black dark:text-white">
-            Crear una cuenta
+      <main className="flex flex-col text-black dark:text-white">
+        <section className="flex flex-col pb-36 p-3 bg-gradient-to-tr from-purple-600 dark:from-neutral-900 via-violet-400 dark:via-violet-950 to-neutral-100 dark:to-neutral-900 text-center">
+          <button onClick={caro} className="text-start w-fit">
+            <ArrowBackIcon fontSize="large" className="hover:cursor-pointer"/>
+          </button>
+          <h1 className="text-center p-5 text-4xl md:text-5xl text-black dark:text-white font-titles">
+            Crea una cuenta
           </h1>
           <form
             onSubmit={handleSubmit}
-            className="flex flex-col gap-10 h-4/5 text-black lg:text-xl mx-auto md:w-1/2 lg:w-1/3"
+            className="flex flex-col gap-10 h-4/5 text-black lg:text-xl mx-auto md:w-1/2 lg:w-1/3 dark:text-white font-text border-2 border-black dark:border-white rounded-xl m-10 p-2 dark:bg-gradient-to-t dark:from-neutral-950"
           >
-            <h2>Regístrate para continuar</h2>
+            <h2 className="font-titles underline text-2xl">Regístrate para continuar</h2>
 
             <div className="flex justify-between items-center">
               <label htmlFor="name">Nombre y Apellido: </label>
@@ -75,7 +81,7 @@ const CrearCuenta = () => {
                 onChange={handleChange}
                 name="name"
                 type="text"
-                className="rounded-xl border-black lg:w-64 p-1"
+                className="rounded-xl border-black border-2 bg-neutral-200 lg:w-64 p-1 dark:text-black"
               />
             </div>
 
@@ -86,7 +92,7 @@ const CrearCuenta = () => {
                 onChange={handleChange}
                 name="email"
                 type="email"
-                className="rounded-xl border-black lg:w-64 p-1"
+                className="rounded-xl border-black border-2 bg-neutral-200 lg:w-64 p-1 dark:text-black"
               />
             </div>
 
@@ -97,7 +103,7 @@ const CrearCuenta = () => {
                 onChange={handleChange}
                 name="password"
                 type="password"
-                className="rounded-xl border-black lg:w-64 p-1"
+                className="rounded-xl border-black border-2 bg-neutral-200 lg:w-64 p-1 dark:text-black"
               />
             </div>
 
@@ -108,12 +114,12 @@ const CrearCuenta = () => {
                 onChange={handleChange}
                 name="repeatPassword"
                 type="password"
-                className="rounded-xl border-black -ml-5 lg:w-64 p-1"
+                className="rounded-xl border-black border-2 bg-neutral-200 -ml-5 lg:w-64 p-1 dark:text-black"
               />
             </div>
             <button
               type="submit"
-              className="dark:text-white text-lg px-5 py-2 rounded-xl bg-indigo-900 hover:bg-indigo-600 text-white border-white border"
+              className="text-xl border-2 border-black dark:border-white rounded-lg p-3 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
             >
               Crear Cuenta
             </button>

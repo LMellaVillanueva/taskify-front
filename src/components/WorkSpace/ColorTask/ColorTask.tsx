@@ -42,7 +42,7 @@ const ColorTask: React.FC<Props> = ({
 
   return (
     <main
-      className={`absolute flex flex-col gap-10 items-center m-auto inset-0 w-2/3 md:w-1/4 h-fit bg-purple-200 dark:bg-stone-800 rounded-xl p-5 border border-black dark:border-white z-10 ${
+      className={`absolute flex flex-col gap-10 items-center m-auto inset-0 w-2/3 md:w-1/4 h-fit bg-gradient-to-tr from-amber-200 to-fuchsia-300 dark:bg-gradient-to-tr dark:from-amber-700 dark:via-black dark:to-violet-600 rounded-xl p-5 border border-black dark:border-white z-10 ${
         colorClose ? styles.close : styles.open
       }`}
     >
@@ -52,7 +52,7 @@ const ColorTask: React.FC<Props> = ({
 
       <p>Seleccione un color:</p>
 
-      <div className="flex flex-wrap items-center justify-center gap-2 border border-black rounded-xl p-4 w-3/4 md:w-full lg:w-3/4">
+      <div className="flex flex-wrap items-center justify-center gap-2 rounded-xl p-4 w-3/4 md:w-full lg:w-3/4">
         {colors.map((oneColor) => (
           <button
             key={oneColor.color}

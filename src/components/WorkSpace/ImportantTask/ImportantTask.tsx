@@ -6,6 +6,7 @@ import { Task } from "../../../types";
 import { CSS } from "@dnd-kit/utilities";
 import { toast } from "sonner";
 import LabelImportantIcon from '@mui/icons-material/LabelImportant';
+// import { useEffect } from "react";
 
 interface Prop {
   task: Task;
@@ -13,6 +14,32 @@ interface Prop {
 
 const ImportantTask: React.FC<Prop> = ({ task }) => {
   const dispatch = useAppDispatch();
+  // const darkMode = window.localStorage.getItem('Theme');
+
+  // useEffect(() => {
+  //   const handleTaskColorByDarkMode = async () => {
+  //     if (darkMode === 'dark') {
+  
+  //       switch (task.color) {
+  //         case '#f87171':
+  //           const {data} = await axiosURL.put(`/task/${task.id}`, { color: '#dc2626' });
+  //           console.log(data)
+            
+  //           break;
+        
+  //         default:
+  //           const response = await axiosURL.put(`/task/${task.id}`, { color: '#f87171' });
+  //           console.log(response.data)
+  //           break;
+  //       }
+  
+  //     }
+  //     getTasksAPI();
+  //   }
+  //   handleTaskColorByDarkMode();
+
+  // }, [darkMode])
+
 
   const handleComplete = async (id: number): Promise<void> => {
     try {
@@ -59,9 +86,8 @@ const ImportantTask: React.FC<Prop> = ({ task }) => {
         className="flex flex-col rounded-xl border gap-2 border-black items-center justify-center p-4 text-black md:w-56"
       >
         <div {...listeners} className="cursor-pointer flex flex-col items-center justify-center w-28 md:w-48">
-          <h3><LabelImportantIcon/>{task.important}</h3>
+          <h3><LabelImportantIcon/>{task.description}</h3>
           <div className="border border-black w-32 mx-auto"></div>
-          <p className="text-xl text-center p-1 w-full break-words">{task.description}</p>
         </div>
 
         <div className="p-2 flex flex-col items-center justify-center gap-2">

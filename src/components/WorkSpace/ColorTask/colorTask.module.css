@@ -1,5 +1,5 @@
 .open {
-    animation: open 350ms ease-out;
+    animation: open 350ms ease;
 }
 
 .close {

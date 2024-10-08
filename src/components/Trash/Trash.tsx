@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { getTasksAPI, getTasksDeletedAPI, searchATask } from "../../redux/slices/Tasks/taskSlice";
 import axiosURL from "../../axiosConfig/axiosURL";
 import { Link } from "react-router-dom";
+import LabelImportantIcon from '@mui/icons-material/LabelImportant';
 import Footer from "../Footer/Footer";
 
 const Trash = () => {
@@ -76,7 +77,7 @@ const Trash = () => {
       {mediumScreen ? (
         <>
           <main className="pt-64 md:pt-52 py-10 flex flex-col items-center gap-24 text-black bg-gradient-to-bl from-white via-violet-200 to-purple-600 dark:bg-gradient-to-br dark:from-neutral-700 dark:via-black dark:to-violet-950">
-            <h1 className="text-center text-4xl text-black dark:text-white">
+            <h1 className="text-center text-4xl text-black dark:text-white font-titles">
               Tareas Completadas
             </h1>
             <div className="flex p-5 w-4/5 gap-8 justify-center">
@@ -87,7 +88,7 @@ const Trash = () => {
             placeholder="Buscar tarea..."
             className="rounded-xl p-1 text-black border border-black w-72"
             />
-            <Link to={"/workSpace"} className="dark:text-white text-lg px-5 py-2 rounded-xl bg-neutral-900 hover:bg-stone-700 text-white border-white border">
+            <Link to={"/workSpace"} className="dark:text-white text-lg px-5 py-2 rounded-xl bg-neutral-900 hover:bg-stone-700 text-white border-white border font-text">
               Volver
             </Link>
             </div>
@@ -99,10 +100,8 @@ const Trash = () => {
                     className="border border-black rounded-xl p-5 flex flex-col items-center gap-5 mb-5"
                     style={{ backgroundColor: task.color }}
                   >
-                    <p className="font-medium text-xl">{task.description}</p>
+                    <p className="font-medium text-xl"><LabelImportantIcon/>{task.description}</p>
                     <div className="border border-black rounded-xl w-3/4"></div>
-                    <p>Importancia: {task.important}</p>
-                    <div className="border border-black rounded-xl w-1/2"></div>
                     <p>
                       Creada el: <b></b>
                       {new Date(task?.date).toLocaleString("es-ES", {
@@ -140,7 +139,7 @@ const Trash = () => {
         <>
           <main className="pt-40 flex flex-col gap-20 py-10 text-black bg-gradient-to-bl from-white via-violet-200 to-purple-600 dark:bg-gradient-to-br dark:from-neutral-700 dark:via-black dark:to-violet-950">
             <header className="flex justify-evenly">
-              <h1 className="text-4xl text-black dark:text-white">
+              <h1 className="text-4xl text-black dark:text-white font-titles">
                 Tareas Completadas
               </h1>
               <input
@@ -149,7 +148,7 @@ const Trash = () => {
                 className="w-96 rounded-xl p-1 text-black border border-black"
                 placeholder="Buscar tarea..."
               />
-              <Link to={"/workSpace"} className="dark:text-white text-lg px-5 py-2 rounded-xl bg-neutral-900 hover:bg-stone-700 text-white border-white border">
+              <Link to={"/workSpace"} className="dark:text-white text-lg px-5 py-2 rounded-xl bg-neutral-900 hover:bg-stone-700 text-white border-white border font-text">
                 Volver
               </Link>
             </header>
@@ -162,10 +161,8 @@ const Trash = () => {
                     className="border border-black rounded-xl p-5 flex flex-col items-center gap-5 mb-5 py-5"
                     style={{ backgroundColor: task.color }}
                   >
-                    <p className="font-medium text-2xl">{task.description}</p>
+                    <p className="font-medium text-2xl"><LabelImportantIcon/>{task.description}</p>
                     <div className="border border-black rounded-xl w-1/2"></div>
-                    <p>Importancia: {task.important}</p>
-                    <div className="border border-black rounded-xl w-1/3"></div>
                     <p>
                       {" "}
                       Creada el: <b></b>

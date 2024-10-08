@@ -12,7 +12,7 @@ import { Link } from "react-router-dom";
 
 //!Components
 import NavBar from "../navBar/NavBar";
-import { Important, Task, TasksList } from "../../types";
+import { Task, TasksList } from "../../types";
 import Footer from "../Footer/Footer";
 import ImportantTask from "./ImportantTask/ImportantTask";
 import UrgencyTask from "./UrgencyTask/UrgencyTask";
@@ -20,7 +20,7 @@ import UrgencyTask from "./UrgencyTask/UrgencyTask";
 import styles from "./workSpace.module.css";
 import CloseIcon from "@mui/icons-material/Close";
 import NewReleasesIcon from '@mui/icons-material/NewReleases';
-import LabelImportantIcon from '@mui/icons-material/LabelImportant';
+import DateRangeIcon from '@mui/icons-material/DateRange';
 
 //!DragAndDrop
 import { closestCenter, DndContext } from "@dnd-kit/core";
@@ -44,7 +44,6 @@ const WorkSpace = () => {
 
   //!States
   const user = useAppSelector((state) => state.User.user);
-  console.log(user)
   const allTasks = useAppSelector((state) => state.Task.allTasks);
   
   const userTasks = allTasks.filter((task) => task.user?.id === user[0]?.id)
@@ -60,7 +59,6 @@ const WorkSpace = () => {
     id: 0,
     description: "",
     urgency: false,
-    important: Important.HIGH,
     date: new Date(),
     elim: false,
     color: "white",
@@ -89,48 +87,51 @@ const WorkSpace = () => {
   }, [])
 
   //! comparar la fecha del recordatorio con la fecha actual
-  useEffect(() => {
-    const intervalId = setInterval(async () => {
-      const today = new Date();
-      setToday(today);
+  // useEffect(() => {
+  //   const intervalId = setInterval(async () => {
+  //     const today = new Date();
+  //     setToday(today);
+  //     console.log('TODAY',today.getTime())
+      
+  //     const tasksDone: TasksList = [];
+      
+  //     userTasks.forEach((task) => {
+  //       const reminderDate = new Date(task.reminder);
+  //       const todayDate = new Date();
+  //       console.log(reminderDate.getTime() == todayDate.getTime())
+  //       if (reminderDate.getTime() == today.getTime()) {
+  //         tasksDone.push(task);
+  //       }
+  //     });
   
-      const tasksDone: TasksList = [];
+  //     const taskNames = tasksDone.map((task) => task.description).join(', ');
   
-      userTasks.forEach((task) => {
-        const reminderDate = new Date(task.reminder);
-        if (reminderDate.getTime() <= today.getTime()) {
-          tasksDone.push(task);
-        }
-      });
+  //     if (tasksDone.length) {
+  //       const updatedInfo = { ...info, message: taskNames };
   
-      const taskNames = tasksDone.map((task) => task.description).join(', ');
+  //       setInfo(updatedInfo);
+  //       console.log(updatedInfo)
   
-      if (tasksDone.length) {
-        const updatedInfo = { ...info, message: taskNames };
+  //       await emailjs
+  //         .send("service_ums6x4q", "template_w8rf65t", updatedInfo, {
+  //           publicKey: "zADAsfTnn9pOJcyPO",
+  //         })
+  //         .then(
+  //           () => {
+  //             setInfo({ ...info, message: "" });
+  //           },
+  //           (error) => {
+  //             console.log("FAILED...", error.text);
+  //             toast.error('Algo salió mal...');
+  //           }
+  //         );
+  //     }
+  //     //*Eliminar tarea después de mandar el recordatorio
   
-        setInfo(updatedInfo);
-        console.log(updatedInfo)
+  //   }, 1000);
   
-        await emailjs
-          .send("service_ums6x4q", "template_w8rf65t", updatedInfo, {
-            publicKey: "zADAsfTnn9pOJcyPO",
-          })
-          .then(
-            () => {
-              setInfo({ ...info, message: "" });
-            },
-            (error) => {
-              console.log("FAILED...", error.text);
-              toast.error('Algo salió mal...');
-            }
-          );
-      }
-      //*Eliminar tarea después de mandar el recordatorio
-  
-    }, 60000);
-  
-    return () => clearInterval(intervalId);
-  }, [userTasks, info]);
+  //   return () => clearInterval(intervalId);
+  // }, [userTasks]);
   
 
   useEffect(() => {
@@ -161,20 +162,9 @@ const WorkSpace = () => {
     });
   };
 
-  // any para manejar funciones desde un button y un select
-  const handleImportancy = (event: any) => {
-    event.preventDefault();
-    const value = event.currentTarget.value as keyof typeof Important;
-    setTask({
-      ...task,
-      important: Important[value],
-      urgency: false,
-    });
-  };
-
   const handleUrgency = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    setTask({ ...task, urgency: true, important: Important.HIGH });
+    setTask({ ...task, urgency: true});
   };
 
   const handleColor = (color: string) => {
@@ -183,7 +173,6 @@ const WorkSpace = () => {
       color: color,
     });
   };
-
 
   const handleSubmit = async (event: React.FormEvent): Promise<void> => {
     try {
@@ -202,6 +191,7 @@ const WorkSpace = () => {
         return;
       }
       const exactReminder = new Date(reminder.getTime());
+
       const { data } = await axiosURL.post("/task", task);
       if (data) {
         await axiosURL.put(`/task/${data.id}`, {
@@ -216,7 +206,6 @@ const WorkSpace = () => {
           id: 0,
           description: "",
           urgency: false,
-          important: Important.HIGH,
           date: new Date(),
           elim: false,
           color: "white",
@@ -314,7 +303,7 @@ const WorkSpace = () => {
           <h1 className="text-center text-4xl">Crear Nueva Tarea</h1>
           <form
             onSubmit={handleSubmit}
-            className="flex flex-col gap-10 md:gap-7 pt-5 h-96 items-center justify-between"
+            className="flex flex-col gap-10 md:gap-7 pt-5 h-96 items-center justify-center md:justify-around"
           >
             <textarea
               name="description"
@@ -326,52 +315,20 @@ const WorkSpace = () => {
               className={`w-4/5 md:w-full md:max-w-56 border border-black dark:border-white rounded-xl text-black p-1 ${styles.textarea}`}
             ></textarea>
             <div className="flex justify-around items-center gap-10 md:gap-0 w-4/6 md:w-full">
-              <button type="button" onClick={handleUrgency} name="urgency"  className="p-1 rounded-lg bg-red-500 hover:bg-red-700 dark:bg-red-950 dark:hover:bg-red-900 py-5 px-3 border-black hover:shadow-sm hover:shadow-black dark:hover:shadow-white border focus:bg-red-700 focus:shadow-white">
+              <button type="button" onClick={handleUrgency} name="urgency"  className="px-3 py-2 md:p-3 rounded-lg bg-red-500 hover:bg-red-400 dark:bg-red-800 dark:hover:bg-red-900 border-black dark:border-white hover:shadow-sm hover:shadow-black dark:hover:shadow-white border focus:bg-red-700 focus:shadow-white transition-colors">
                 <NewReleasesIcon fontSize="small"/> Urgente
               </button>
-              <div className="flex flex-col items-center">
-                <p>Importancia</p>
-                <button
-                  type="button"
-                  onClick={handleImportancy}
-                  name={Important.HIGH}
-                  value={Important.HIGH}
-                  className="p-1 rounded-lg w-28 text-start bg-green-500 hover:bg-green-700 dark:bg-red-950 dark:hover:bg-red-900 border-black hover:shadow-sm hover:shadow-black dark:hover:shadow-white border focus:bg-green-700"
-                >
-                  <LabelImportantIcon/>HIGH
-                </button>
-                <button
-                  type="button"
-                  onClick={handleImportancy}
-                  name={Important.MEDIUM}
-                  value={Important.MEDIUM}
-                  className="p-1 rounded-lg w-28 text-start bg-yellow-500 hover:bg-yellow-600 dark:bg-red-950 dark:hover:bg-red-900 border-black hover:shadow-sm hover:shadow-black dark:hover:shadow-white border focus:bg-yellow-600"
-                >
-                  <LabelImportantIcon/>MEDIUM
-                </button>
-                <button
-                  type="button"
-                  onClick={handleImportancy}
-                  name={Important.LOW}
-                  value={Important.LOW}
-                  className="p-1 rounded-lg w-28 text-start bg-blue-500 hover:bg-blue-700 dark:bg-red-950 dark:hover:bg-red-900 border-black hover:shadow-sm hover:shadow-black dark:hover:shadow-white border focus:bg-blue-700"
-                >
-                  <LabelImportantIcon/>LOW
-                </button>
-              </div>
-            </div>
-            <div>
               <button
                 type="button"
                 onClick={handleCalendarOpen}
-                className="p-1 rounded-lg bg-violet-500 hover:bg-violet-700 dark:bg-violet-950 dark:hover:bg-purple-900 border-black border hover:shadow-sm hover:shadow-black dark:hover:shadow-white"
+                className="flex items-center gap-2 p-3 rounded-lg bg-yellow-500 hover:bg-yellow-400 dark:bg-amber-700 dark:hover:bg-amber-800 border-black dark:border-white border hover:shadow-sm hover:shadow-black dark:hover:shadow-white transition-colors"
               >
-                Recordatorio
+                <DateRangeIcon/> Recordatorio
               </button>
               {calendarOpen && (
                 <div>
                   <div
-                    className={`w-3/5 lg:w-2/5 h-fit lg:h-1/2 p-5 absolute inset-0 m-auto flex flex-col gap-10 bg-purple-200 items-center dark:text-black border border-black rounded-xl ${
+                    className={`w-3/5 lg:w-2/5 h-fit lg:h-1/2 p-5 absolute inset-0 m-auto flex flex-col gap-10 bg-yellow-200 dark:bg-amber-600 items-center dark:text-black border border-black rounded-xl ${
                       calendarClose ? styles.close : styles.open
                     }`}
                   >
@@ -411,7 +368,7 @@ const WorkSpace = () => {
               <button
                 type="button"
                 onClick={handleColorOpen}
-                className="p-1 rounded-full bg-red-400 hover:bg-red-500 dark:bg-red-900 dark:hover:bg-red-800 border border-black text-transparent text-2xl hover:shadow-sm hover:shadow-black dark:hover:shadow-white"
+                className="p-1 rounded-full bg-red-400 hover:bg-red-500 bg-gradient-to-br from-yellow-500 to-purple-600 dark:bg-gradient-to-br dark:from-amber-500 dark:via-violet-700 dark:to-black dark:hover:bg-red-800 border border-black dark:border-white text-transparent text-2xl hover:shadow-sm hover:shadow-black dark:hover:shadow-white transition-colors"
               >
                 {" "}
                 llm
@@ -429,7 +386,7 @@ const WorkSpace = () => {
               )}
               <button
                 type="submit"
-                className="p-2 rounded-lg bg-pink-400 hover:bg-pink-500 dark:bg-pink-950 dark:hover:bg-pink-900 border-black border hover:shadow-sm hover:shadow-black dark:hover:shadow-white"
+                className="p-2 rounded-lg bg-lime-400 hover:bg-lime-300 dark:bg-purple-800 dark:hover:bg-purple-900 border-black dark:border-white border hover:shadow-sm hover:shadow-black dark:hover:shadow-white transition-colors"
               >
                 Agregar
               </button>
@@ -460,17 +417,6 @@ const WorkSpace = () => {
                 value={descriptionNotCreated}
               />
               <button onClick={handleUrgency}>Urgente</button>
-              <select
-                name="important"
-                id=""
-                className="text-black p-1 rounded-lg"
-                onClick={handleImportancy}
-              >
-                <option value={Important.HIGH}>Importancia</option>
-                <option value={Important.HIGH}>HIGH</option>
-                <option value={Important.MEDIUM}>MEDIUM</option>
-                <option value={Important.LOW}>LOW</option>
-              </select>
               <div className="flex justify-evenly w-full">
               <button
                 type="button"
@@ -514,7 +460,7 @@ const WorkSpace = () => {
                   <h2>Importancia</h2>
                   <article
                     key={task.id}
-                    className="flex flex-col items-center justify-around h-96 border border-black dark:border-white rounded-xl p-4 w-44 md:w-72 overflow-y-auto dark:text-black"
+                    className="flex flex-col-reverse items-center justify-around h-96 border border-black dark:border-white rounded-xl p-4 w-44 md:w-72 overflow-y-auto dark:text-black"
                   >
                     {importantTasks?.map((task) => (
                       <main key={task.id}>

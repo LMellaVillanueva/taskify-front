@@ -8,7 +8,9 @@ export default {
   theme: {
     extend: {},
     fontFamily: {
-      'serif': ["Play", 'sans-serif']
+      'serif': ["Play", 'sans-serif'],
+      'titles': ["Changa", 'sans-serif'],
+      'text': ["Mohave", 'sans-serif']
     }
   },
   plugins: [

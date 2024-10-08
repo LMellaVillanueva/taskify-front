@@ -69,7 +69,7 @@ const NavBar = () => {
 
   const handleLogOut = () => {
     dispatch(logOutUser());
-    window.localStorage.clear();
+    window.localStorage.removeItem('User');
     toast.success('Sesión cerrada con éxito');
     return navigate('/')
   };
@@ -151,7 +151,7 @@ const NavBar = () => {
                   name="email"
                   onChange={handleChange}
                   value={userInfo.email}
-                  className="rounded-xl border-2 border-black dark:border-white dark:border dark:bg-neutral-600"
+                  className="rounded-xl p-0.5 border-2 border-black dark:border-white dark:border dark:bg-neutral-600"
                 />
                 <label htmlFor="password">Contraseña:</label>
                 <input
@@ -159,7 +159,7 @@ const NavBar = () => {
                   name="password"
                   onChange={handleChange}
                   value={userInfo.password}
-                  className="rounded-xl border-2 border-black dark:border-white dark:border dark:bg-neutral-600"
+                  className="rounded-xl p-0.5 border-2 border-black dark:border-white dark:border dark:bg-neutral-600"
                 />
               </div>
               <div className="text-center text-sm flex flex-col gap-2">
@@ -188,7 +188,7 @@ const NavBar = () => {
                   name="email"
                   onChange={handleChange}
                   value={userInfo.email}
-                  className="rounded-xl border-2 border-black dark:border-white dark:border dark:bg-neutral-600"
+                  className="rounded-xl p-0.5 border-2 border-black dark:border-white dark:border dark:bg-neutral-600"
                 />
               </div>
               <div className={`flex flex-col items-start`}>
@@ -198,7 +198,7 @@ const NavBar = () => {
                   name="password"
                   onChange={handleChange}
                   value={userInfo.password}
-                  className="rounded-xl border-2 border-black dark:border-white dark:border dark:bg-neutral-600"
+                  className="rounded-xl p-0.5 border-2 border-black dark:border-white dark:border dark:bg-neutral-600"
                 />
               </div>
               <div>
@@ -224,7 +224,7 @@ const NavBar = () => {
             <h2 className="text-xs md:text-sm w-full lg:text-xl text-center">
               Bienvenido/a {user[0].name}!
             </h2>
-            <button onClick={handleLogOut}>Cerrar Sesión</button>
+            <button onClick={handleLogOut} className="border border-black dark:border-white rounded-lg p-0.5 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors">Cerrar Sesión</button>
           </section>
         )}
       </nav>
