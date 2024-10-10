@@ -15,6 +15,7 @@ const Trash = () => {
   const tasksDeleted = deleteTasks.filter((task) => task.user?.id === user[0]?.id)
   
   useEffect(() => {
+    window.scrollTo(0, 0);
     const handleResize = () => {
       setMediumScreen(window.innerWidth <= 1024);
     };

@@ -2,8 +2,11 @@ import { useState } from "react";
 import logo from "../../assets/logo.png";
 import emailjs from "@emailjs/browser";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 const Footer = () => {
+  const navigate = useNavigate();
+
   const [info, setInfo] = useState({
     from_name: "",
     from_email: "",
@@ -50,12 +53,8 @@ const Footer = () => {
       );
   };
 
-  const handleNavigation = (event: any, targetId: string) => {
-    event.preventDefault();
-    const targetElement = document.getElementById(targetId);
-    if (targetElement) {
-      targetElement.scrollIntoView({ behavior: "smooth" });
-    }
+  const handleNavigation = (targetId: string) => {
+      return navigate('/', { state: { targetId } });
   };
 
   return (
@@ -76,7 +75,7 @@ const Footer = () => {
             <p className="font-extrabold text-lg">Inicio</p>
             <p className="mt-3">
               <button
-                onClick={() => handleNavigation(event, "intro")}
+                onClick={() => handleNavigation("intro")}
                 className="border-none hover:underline"
               >
                 Introducción a Taskify
@@ -88,7 +87,7 @@ const Footer = () => {
             <p className="font-extrabold text-lg">Creación</p>
             <p className="mt-3">
               <button
-                onClick={() => handleNavigation(event, "steps")}
+                onClick={() => handleNavigation("steps")}
                 className="border-none hover:underline"
               >
                 Pasos para crear tareas
@@ -96,7 +95,7 @@ const Footer = () => {
             </p>
             <p className="mt-2">
               <button
-                onClick={() => handleNavigation(event, "fnUrgency")}
+                onClick={() => handleNavigation("fnUrgency")}
                 className="border-none hover:underline"
               >
                 Función Urgency
@@ -109,7 +108,7 @@ const Footer = () => {
             <p className="font-extrabold text-lg">Soluciones</p>
             <p className="mt-3">
               <button
-                onClick={() => handleNavigation(event, "solution")}
+                onClick={() => handleNavigation("solution")}
                 className="border-none hover:underline"
               >
                 ¿Qué soluciona Taskify?

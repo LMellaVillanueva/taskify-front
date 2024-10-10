@@ -31,7 +31,7 @@ const ColorTask: React.FC<Props> = ({
     { icon: <CircleIcon className="text-red-400 dark:text-red-600"fontSize="large"/> ,color: darkMode === "dark" ? "#dc2626" : "#f87171" },
     { icon:  <CircleIcon className="text-green-400 dark:text-green-600"fontSize="large"/> ,color: darkMode === "dark" ? "#16a34a" : "#4ade80" },
     { icon:  <CircleIcon className="text-blue-400 dark:text-blue-600"fontSize="large"/> ,color: darkMode === "dark" ? "#2563eb" : "#60a5fa" },
-    { icon:  <CircleIcon className="text-amber-400 dark:text-amber-600"fontSize="large"/> ,color: darkMode === "dark" ? "#97706" : "#fbbf24" },
+    { icon:  <CircleIcon className="text-amber-400 dark:text-amber-600"fontSize="large"/> ,color: darkMode === "dark" ? "#d97706" : "#fbbf24" },
     { icon:  <CircleIcon className="text-cyan-400 dark:text-cyan-600"fontSize="large"/> ,color: darkMode === "dark" ? "#0891b2 " : "#22d3ee" },
     { icon:  <CircleIcon className="text-indigo-400 dark:text-indigo-600"fontSize="large"/> ,color: darkMode === "dark" ? "#4f46e5" : "#818cf8" },
     { icon:  <CircleIcon className="text-lime-400 dark:text-lime-600"fontSize="large"/> ,color: darkMode === "dark" ? "#65a30d" : "#a3e635" },

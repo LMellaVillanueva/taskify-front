@@ -14,6 +14,7 @@ const CrearCuenta = () => {
   const [repeatPassword, setRepeatPassword] = useState("");
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     toast.warning('Debes tener una cuenta para crear tus propias tareas!', {duration: 2000})
   }, [])
 

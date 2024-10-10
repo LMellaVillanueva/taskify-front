@@ -19,8 +19,9 @@ import UrgencyTask from "./UrgencyTask/UrgencyTask";
 //Css & Icons
 import styles from "./workSpace.module.css";
 import CloseIcon from "@mui/icons-material/Close";
-import NewReleasesIcon from '@mui/icons-material/NewReleases';
-import DateRangeIcon from '@mui/icons-material/DateRange';
+import NewReleasesIcon from "@mui/icons-material/NewReleases";
+import DateRangeIcon from "@mui/icons-material/DateRange"; 
+import TaskAltIcon from '@mui/icons-material/TaskAlt';
 
 //!DragAndDrop
 import { closestCenter, DndContext } from "@dnd-kit/core";
@@ -45,8 +46,8 @@ const WorkSpace = () => {
   //!States
   const user = useAppSelector((state) => state.User.user);
   const allTasks = useAppSelector((state) => state.Task.allTasks);
-  
-  const userTasks = allTasks.filter((task) => task.user?.id === user[0]?.id)
+
+  const userTasks = allTasks.filter((task) => task.user?.id === user[0]?.id);
 
   const urgencyTask = userTasks.filter((task) => task.urgency === true);
   const importantTasks = userTasks.filter((task) => task.urgency === false);
@@ -67,6 +68,10 @@ const WorkSpace = () => {
   });
   const [reminder, setReminder] = useState(new Date());
   const [today, setToday] = useState(new Date());
+  const [taskCompletedOpen, setTaskCompletedOpen] = useState(false);
+  const [taskCompletedClose, setTaskCompletedClose] = useState(false);
+
+  const [taskToComplete, setTaskToComplete] = useState<TasksList>([]);
 
   const [info, setInfo] = useState<{
     from_name: string;
@@ -79,71 +84,82 @@ const WorkSpace = () => {
   });
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     setInfo({
       ...info,
       from_name: user[0]?.name,
-      to_email: user[0]?.email
-    })
-  }, [])
+      to_email: user[0]?.email,
+    });
+  }, []);
 
   //! comparar la fecha del recordatorio con la fecha actual
-  // useEffect(() => {
-  //   const intervalId = setInterval(async () => {
-  //     const today = new Date();
-  //     setToday(today);
-  //     console.log('TODAY',today.getTime())
-      
-  //     const tasksDone: TasksList = [];
-      
-  //     userTasks.forEach((task) => {
-  //       const reminderDate = new Date(task.reminder);
-  //       const todayDate = new Date();
-  //       console.log(reminderDate.getTime() == todayDate.getTime())
-  //       if (reminderDate.getTime() == today.getTime()) {
-  //         tasksDone.push(task);
-  //       }
-  //     });
-  
-  //     const taskNames = tasksDone.map((task) => task.description).join(', ');
-  
-  //     if (tasksDone.length) {
-  //       const updatedInfo = { ...info, message: taskNames };
-  
-  //       setInfo(updatedInfo);
-  //       console.log(updatedInfo)
-  
-  //       await emailjs
-  //         .send("service_ums6x4q", "template_w8rf65t", updatedInfo, {
-  //           publicKey: "zADAsfTnn9pOJcyPO",
-  //         })
-  //         .then(
-  //           () => {
-  //             setInfo({ ...info, message: "" });
-  //           },
-  //           (error) => {
-  //             console.log("FAILED...", error.text);
-  //             toast.error('Algo salió mal...');
-  //           }
-  //         );
-  //     }
-  //     //*Eliminar tarea después de mandar el recordatorio
-  
-  //   }, 1000);
-  
-  //   return () => clearInterval(intervalId);
-  // }, [userTasks]);
-  
+  useEffect(() => {
+    const intervalId = setInterval(async () => {
+      const today = new Date();
+      setToday(today);
+
+      const tasksDone: TasksList = [];
+
+      userTasks.forEach((task) => {
+        const reminderDate = new Date(task.reminder);
+        const todayDate = new Date();
+
+        const reminderCoincidence = reminderDate.getTime() <= todayDate.getTime();
+        
+        if (reminderCoincidence) {
+          tasksDone.push(task);
+        }
+      });
+
+      const taskNames = tasksDone.map((task) => task.description).join(', ');
+
+      if (tasksDone.length) {
+        const updatedInfo = { ...info, message: taskNames };
+
+        setInfo(updatedInfo);
+
+        tasksDone.forEach((task) => {
+          setTaskToComplete([task]);
+        })
+        
+        // await emailjs
+        //   .send("service_ums6x4q", "template_w8rf65t", updatedInfo, {
+        //     publicKey: "zADAsfTnn9pOJcyPO",
+        //   })
+        //   .then(
+        //     () => {
+        //       setInfo({ ...info, message: "" });
+        //     },
+        //     (error) => {
+        //       console.log("FAILED...", error.text);
+        //       toast.error('Algo salió mal...');
+        //     }
+        //   );
+      }
+    }, 10000);
+
+    return () => clearInterval(intervalId);
+  }, [userTasks]);
+
+  useEffect(() => {
+    if (taskToComplete.length) {
+      setTaskCompletedOpen(true);
+      setTaskCompletedClose(false);
+    } else {
+      handleCompleteTaskClose();
+    }
+  }, [taskToComplete])
 
   useEffect(() => {
     const fetchTasks = async () => {
       try {
         await dispatch(getTasksAPI());
       } catch (error) {
-      if (error instanceof Error) console.error(error.message);
+        if (error instanceof Error) console.error(error.message);
       }
-    }
+    };
     fetchTasks();
-  }, [])
+  }, []);
 
   //!Functions
   const handleDescription = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -164,7 +180,7 @@ const WorkSpace = () => {
 
   const handleUrgency = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    setTask({ ...task, urgency: true});
+    setTask({ ...task, urgency: true });
   };
 
   const handleColor = (color: string) => {
@@ -179,15 +195,15 @@ const WorkSpace = () => {
       event.preventDefault();
       //! Toast warning
       if (!task.description.length) {
-        toast.warning('Oops...' ,{
-          description: 'Las tareas deben tener una descripción válida'
-        })
+        toast.warning("Oops...", {
+          description: "Las tareas deben tener una descripción válida",
+        });
         return;
       }
       if (allTasks.some((aTask) => aTask.description === task.description)) {
-        toast.warning('Oops...' ,{
-          description: 'Esta tarea ya existe'
-        })
+        toast.warning("Oops...", {
+          description: "Esta tarea ya existe",
+        });
         return;
       }
       const exactReminder = new Date(reminder.getTime());
@@ -200,7 +216,7 @@ const WorkSpace = () => {
         });
 
         //* Toast success
-        toast.success('Tarea creada!');
+        toast.success("Tarea creada!");
 
         setTask({
           id: 0,
@@ -257,7 +273,7 @@ const WorkSpace = () => {
       selectedDate.setUTCHours(0, 0, 0, 0);
 
       if (selectedDate < today) {
-        return window.alert(
+        return toast.warning(
           "El recordatorio no puede ser menor a la fecha actual!"
         );
       }
@@ -275,6 +291,19 @@ const WorkSpace = () => {
     setReminder(hourReminder);
   };
 
+  const handleDeleteTaskReminder = async () => {
+    setTaskToComplete([]);
+    try {
+      const taskToDelete = taskToComplete.map(async(task) => {
+        await axiosURL.delete(`/task/${task.id}`);
+      })
+      await Promise.all(taskToDelete);
+      await dispatch(getTasksAPI());
+    } catch (error) {
+      if (error instanceof Error) console.error(error.message);
+    }
+  }
+
   //! modales
   const handleCalendarOpen = () => {
     setCalendarOpen(true);
@@ -287,17 +316,24 @@ const WorkSpace = () => {
       setCalendarOpen(false);
     }, 300);
   };
-
+  
   const handleColorOpen = () => {
     setColorOpen(true);
     setColorClose(false);
   };
 
+  const handleCompleteTaskClose = () => {
+    setTaskCompletedClose(true);
+    setTimeout(() => {
+      setTaskCompletedOpen(false);
+    }, 300);
+  }
+
   return (
     <React.Fragment>
       <NavBar />
       <main
-        className={`pt-64 md:pt-52 px-5 pb-32 lg:pt-44 flex flex-col lg:flex-row w-full justify-around items-center lg:items-baseline overflow-hidden gap-16 lg:gap-0 dark:bg-neutral-900 text-black dark:text-white bg-gradient-to-bl from-white via-violet-200 to-purple-600 dark:bg-gradient-to-br dark:from-neutral-700 dark:via-black dark:to-violet-950`}
+        className={`pt-64 md:pt-52 px-5 pb-32 lg:pt-32 flex flex-col lg:flex-row w-full justify-around items-center lg:items-baseline overflow-hidden gap-16 lg:gap-0 dark:bg-neutral-900 text-black dark:text-white bg-gradient-to-bl from-white via-violet-200 to-purple-600 dark:bg-gradient-to-br dark:from-neutral-700 dark:via-black dark:to-violet-950`}
       >
         <section className="p-2 md:p-10 lg:p-5 lg:w-1/4 h-fit border border-black dark:border-white rounded-xl">
           <h1 className="text-center text-4xl">Crear Nueva Tarea</h1>
@@ -315,15 +351,20 @@ const WorkSpace = () => {
               className={`w-4/5 md:w-full md:max-w-56 border border-black dark:border-white rounded-xl text-black p-1 ${styles.textarea}`}
             ></textarea>
             <div className="flex justify-around items-center gap-10 md:gap-0 w-4/6 md:w-full">
-              <button type="button" onClick={handleUrgency} name="urgency"  className="px-3 py-2 md:p-3 rounded-lg bg-red-500 hover:bg-red-400 dark:bg-red-800 dark:hover:bg-red-900 border-black dark:border-white hover:shadow-sm hover:shadow-black dark:hover:shadow-white border focus:bg-red-700 focus:shadow-white transition-colors">
-                <NewReleasesIcon fontSize="small"/> Urgente
+              <button
+                type="button"
+                onClick={handleUrgency}
+                name="urgency"
+                className="px-3 py-2 md:p-3 rounded-lg bg-red-500 hover:bg-red-400 dark:bg-red-800 dark:hover:bg-red-900 border-black dark:border-white hover:shadow-sm hover:shadow-black dark:hover:shadow-white border focus:bg-red-700 focus:shadow-white transition-colors"
+              >
+                <NewReleasesIcon fontSize="small" /> Urgente
               </button>
               <button
                 type="button"
                 onClick={handleCalendarOpen}
                 className="flex items-center gap-2 p-3 rounded-lg bg-yellow-500 hover:bg-yellow-400 dark:bg-amber-700 dark:hover:bg-amber-800 border-black dark:border-white border hover:shadow-sm hover:shadow-black dark:hover:shadow-white transition-colors"
               >
-                <DateRangeIcon/> Recordatorio
+                <DateRangeIcon /> Recordatorio
               </button>
               {calendarOpen && (
                 <div>
@@ -353,7 +394,9 @@ const WorkSpace = () => {
                       type="button"
                       className="p-1 rounded-lg bg-violet-500 hover:bg-purple-500 border-black border"
                       onClick={() => {
-                        toast.success("Recordatorio agendado!", {duration: 1500});
+                        toast.success("Recordatorio agendado!", {
+                          duration: 1500,
+                        });
                         handleCalendarClose();
                       }}
                     >
@@ -418,15 +461,20 @@ const WorkSpace = () => {
               />
               <button onClick={handleUrgency}>Urgente</button>
               <div className="flex justify-evenly w-full">
-              <button
-                type="button"
-                onClick={handleColorOpen}
-                className="p-1 rounded-full bg-red-400 hover:bg-red-500 dark:bg-red-900 dark:hover:bg-red-600 border border-black dark:border-white text-transparent text-lg"
-              >
-                {" "}
-                lmk
-              </button>
-              <button type="submit" className="p-1 rounded-lg bg-pink-400 hover:bg-pink-500 dark:bg-pink-900 dark:hover:bg-pink-600 border-black dark:border-white border">Crear</button>
+                <button
+                  type="button"
+                  onClick={handleColorOpen}
+                  className="p-1 rounded-full bg-red-400 hover:bg-red-500 dark:bg-red-900 dark:hover:bg-red-600 border border-black dark:border-white text-transparent text-lg"
+                >
+                  {" "}
+                  lmk
+                </button>
+                <button
+                  type="submit"
+                  className="p-1 rounded-lg bg-pink-400 hover:bg-pink-500 dark:bg-pink-900 dark:hover:bg-pink-600 border-black dark:border-white border"
+                >
+                  Crear
+                </button>
               </div>
             </form>
           )}
@@ -468,14 +516,23 @@ const WorkSpace = () => {
                       </main>
                     ))}
                   </article>
-                  <Link to={"/trash"} className="pt-2">
-                    Tareas Completadas
-                  </Link>
+                  <button className="hover:underline w-fit m-auto">
+                    <Link to={"/trash"} className="pt-2">
+                      <TaskAltIcon/> Tareas Completadas
+                    </Link>
+                  </button>
                 </div>
               </SortableContext>
             </DndContext>
           </article>
         </section>
+        {taskCompletedOpen && (
+          <div className={`absolute inset-0 m-auto bg-white w-4/5 h-3/4 text-black border border-black rounded-lg ${taskCompletedClose ? styles.close : styles.open}`}>
+            <span>¿Quieres completar esta tarea?</span>
+            <button onClick={handleDeleteTaskReminder}>Completar Tarea</button>
+            <button onClick={handleCompleteTaskClose}>X</button>
+          </div>
+        )}
       </main>
       <Footer />
     </React.Fragment>

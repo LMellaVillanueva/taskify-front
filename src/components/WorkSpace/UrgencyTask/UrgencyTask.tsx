@@ -36,7 +36,7 @@ const UrgencyTask: React.FC<Prop> = ({ task }) => {
         <p className="text-2xl text-center w-full break-words p-1 overflow-y-auto">
           {task.description}
         </p>
-        <NewReleasesIcon fontSize="small" />
+        <NewReleasesIcon fontSize="medium" />
         <div className="border border-black w-10/12 mx-auto"></div>
 
         {/* {today > reminderDate &&  */}
@@ -52,7 +52,7 @@ const UrgencyTask: React.FC<Prop> = ({ task }) => {
         {/* } */}
         <button
           onClick={() => handleComplete(task.id)}
-          className="text-center p-2 anim"
+          className="text-center p-2 anim hover:underline"
         >
           Completar Tarea
           {/* animacion */}

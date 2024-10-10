@@ -1,13 +1,22 @@
 import NavBar from "../navBar/NavBar";
 import taskify1 from "../../assets/taskify1.png";
 import Footer from "../Footer/Footer";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useAppSelector } from "../../redux/store";
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import { useEffect } from "react";
 
 const Landing = () => {
-
+  const location = useLocation();
+  const { targetId } = location.state || {};
   const user = useAppSelector(state => state.User.user);
+
+  useEffect(() => {
+    const section = document.getElementById(targetId);
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [targetId])
 
   return (
     <>

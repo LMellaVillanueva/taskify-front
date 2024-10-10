@@ -91,8 +91,8 @@ const ImportantTask: React.FC<Prop> = ({ task }) => {
         </div>
 
         <div className="p-2 flex flex-col items-center justify-center gap-2">
-          <button onClick={() => handleComplete(task.id)}>Completar Tarea</button>
-          <button onClick={() => updateUrgency(task.id)}>Urgente</button>
+          <button className="hover:underline" onClick={() => handleComplete(task.id)}>Completar Tarea</button>
+          <button className="hover:underline" onClick={() => updateUrgency(task.id)}>Urgente</button>
         </div>
       </section>
     </main>
