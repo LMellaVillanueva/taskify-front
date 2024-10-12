@@ -50,8 +50,8 @@ const Landing = () => {
           <img src={taskify1} alt="image" className={`w-96 lg:w-5/12`} />
         </article>
 
-        <section className={`flex flex-col items-center py-20`}>
-          <h2 className="text-4xl lg:text-5xl pb-5 text-center font-titles">
+        <section className={`flex flex-col items-center py-20 lg:py-16`}>
+          <h2 className="text-4xl lg:text-5xl pb-5 lg:pb-10 text-center font-titles">
             Comienza tu Creación de Tareas aquí
           </h2>
           {user.length === 0 ? (

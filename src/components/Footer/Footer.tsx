@@ -68,11 +68,11 @@ const Footer = () => {
             alt="logoTaskify"
             className="w-7/12 md:w-2/6 lg:w-56 rounded-full m-auto"
           />
-          <p className="text-lg">La armonía de tu desorden</p>
+          <p className="text-lg font-titles">La armonía de tu desorden</p>
         </div>
-        <ul className="flex flex-col md:flex-row gap-10 lg:gap-0 w-full lg:justify-evenly md:items-start justify-center lg:w-1/2">
+        <ul className="flex flex-col md:flex-row gap-10 lg:gap-0 w-full lg:justify-evenly md:items-start justify-center lg:w-1/2 font-text">
           <li>
-            <p className="font-extrabold text-lg">Inicio</p>
+            <p className="font-extrabold text-lg font-titles">Inicio</p>
             <p className="mt-3">
               <button
                 onClick={() => handleNavigation("intro")}
@@ -84,7 +84,7 @@ const Footer = () => {
           </li>
           <div className="border border-white md:hidden"></div>
           <li>
-            <p className="font-extrabold text-lg">Creación</p>
+            <p className="font-extrabold text-lg font-titles">Creación</p>
             <p className="mt-3">
               <button
                 onClick={() => handleNavigation("steps")}
@@ -105,7 +105,7 @@ const Footer = () => {
           </li>
           <div className="border border-white md:hidden"></div>
           <li>
-            <p className="font-extrabold text-lg">Soluciones</p>
+            <p className="font-extrabold text-lg font-titles">Soluciones</p>
             <p className="mt-3">
               <button
                 onClick={() => handleNavigation("solution")}
@@ -116,10 +116,17 @@ const Footer = () => {
             </p>
           </li>
           <div className="border border-white md:hidden"></div>
+          <li className="md:hidden">
+          <p className="font-extrabold text-lg font-titles">Contacto</p>
+          <span>Si tienes alguna duda o un problema que solucionar, no dudes en escribirnos! <br></br> En la brevedad nos pondremos en contacto contigo.</span>
+          </li>
         </ul>
         <div className="md:w-2/3 lg:w-1/4 flex flex-col gap-3 md:m-auto">
-          <p className="font-extrabold text-lg">Contacto</p>
-          <form onSubmit={sendEmail} className="flex flex-col gap-3">
+        <div className="font-text pb-5 hidden md:block">
+          <p className="font-extrabold text-lg font-titles">Contacto</p>
+          <span>Si tienes alguna duda o un problema que solucionar, no dudes en escribirnos! <br></br> En la brevedad nos pondremos en contacto contigo.</span>
+        </div>
+          <form onSubmit={sendEmail} className="flex flex-col gap-3 font-text">
             <label htmlFor="name">Nombre:</label>
             <input
               value={info.from_name}

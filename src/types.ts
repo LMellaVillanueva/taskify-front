@@ -5,6 +5,7 @@ export interface Task {
     urgency: boolean
     date: Date
     elim: boolean
+    completed: boolean
     color: string
     reminder: Date
     userId: string
