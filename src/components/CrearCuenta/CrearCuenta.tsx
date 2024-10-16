@@ -51,6 +51,7 @@ const CrearCuenta = () => {
         return navigate('/workSpace')
       }
     } catch (error) {
+      toast.error('Parece que este usuario ya existe...');
       if (error instanceof Error) console.error(error.message);
     }
   };

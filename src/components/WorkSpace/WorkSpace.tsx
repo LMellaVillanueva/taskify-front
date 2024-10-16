@@ -70,15 +70,11 @@ const WorkSpace = () => {
   const [reminder, setReminder] = useState(new Date());
   const [dateReminder, setDateReminder] = useState(false);
   const [hourReminder, setHourReminder] = useState(false);
-  const [today, setToday] = useState(new Date());
   const [taskCompletedOpen, setTaskCompletedOpen] = useState(false);
   const [taskCompletedClose, setTaskCompletedClose] = useState(false);
-
-  const [info, setInfo] = useState<{
-    from_name: string;
-    to_email: string;
-    message: string;
-  }>({
+  const [taskToComplete, setTaskToComplete] = useState<TasksList>([]);
+  const [showModal, setShowModal] = useState(false);
+  const [info, setInfo] = useState({
     from_name: "",
     to_email: "",
     message: "",
@@ -93,62 +89,59 @@ const WorkSpace = () => {
     });
   }, []);
 
+
   //! comparar la fecha del recordatorio con la fecha actual
-  // useEffect(() => {
-  //   const intervalId = setInterval(async () => {
-  //     const today = new Date();
-  //     setToday(today);
+  useEffect(() => {
+    const today = new Date();
+    let tasksToComplete: TasksList = [];
 
-  //     let tasksToComplete: TasksList = [];
+    userTasks.forEach((task) => {
+      const reminderDate = new Date(task.reminder);
 
-  //     userTasks.forEach((task) => {
-  //       const reminderDate = new Date(task.reminder);
-  //       const todayDate = new Date();
+      const reminderCoincidence = reminderDate.getTime() <= today.getTime();
+console.log(reminderCoincidence)
+      if (reminderCoincidence) {
+        tasksToComplete.push(task);
+        //!para usarlo como array de dependencias en useEffect del modal
+        setTaskToComplete([...taskToComplete, task]);
+      }
+    });
 
-  //       const reminderCoincidence = reminderDate.getTime() <= todayDate.getTime();
+    const taskNames = tasksToComplete
+      .map((task) => task.description)
+      .join(", ");
 
-  //       if (reminderCoincidence) {
-  //         tasksToComplete.push(task);
-  //       }
-  //     });
+    if (tasksToComplete.length) {
+      const updatedInfo = { ...info, message: taskNames };
 
-  //     const taskNames = tasksToComplete.map((task) => task.description).join(", ");
+      setInfo(updatedInfo);
 
-  //     if (tasksToComplete.length) {
-  //       const updatedInfo = { ...info, message: taskNames };
+      emailjs
+        .send("service_0jum38a", "template_w8rf65t", updatedInfo, {
+          publicKey: "zADAsfTnn9pOJcyPO",
+        })
+        .then(
+          async () => {
+            setInfo({ ...info, message: "" });
 
-  //       setInfo(updatedInfo);
-
-  //       await emailjs
-  //         .send("service_0jum38a", "template_w8rf65t", updatedInfo, {
-  //           publicKey: "zADAsfTnn9pOJcyPO",
-  //         })
-  //         .then(
-  //           async () => {
-  //             setInfo({ ...info, message: "" });
-
-  //             //al enviar el correo se actualiza al task en completed true
-  //             const completedTasks = tasksToComplete.map(async(task) => {
-  //               const { data } = await axiosURL.put(`/task/${task.id}`, { completed: true });
-  //               if (data) {
-  //                 console.log(data);
-  //               }
-  //             })
-  //             await Promise.all(completedTasks);
-  //           },
-  //           (error) => {
-  //             console.log("FAILED...", error.text);
-  //             toast.error('Recordatorio no enviado');
-  //           }
-  //         );
-  //     }
-  //   }, 10000);
-
-  //   return () => clearInterval(intervalId);
-  // }, [userTasks]);
+            //al enviar el correo se actualiza al task en completed true
+            const completedTasks = tasksToComplete.map(async (task) => {
+              await axiosURL.put(`/task/${task.id}`, {
+                completed: true,
+              });
+            });
+            await Promise.all(completedTasks);
+            setShowModal(true);
+          },
+          (error) => {
+            console.log("FAILED...", error.text);
+            toast.error("Recordatorio no enviado");
+          }
+        );
+    }
+  }, []);
 
   useEffect(() => {
-
     //verificar si una tarea esta completa y ya se envió el correo
     const reminderSent = userTasks.some((task) => task.completed === true);
 
@@ -158,7 +151,7 @@ const WorkSpace = () => {
     } else {
       handleCompleteTaskClose();
     }
-  }, []);
+  }, [showModal]);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -211,9 +204,7 @@ const WorkSpace = () => {
         return;
       }
       if (!dateReminder || !hourReminder) {
-        toast.warning(
-          "Debes seleccionar un recordatorio para tu tarea!"
-        );
+        toast.warning("Debes seleccionar un recordatorio para tu tarea!");
         return;
       }
       if (allTasks.some((aTask) => aTask.description === task.description)) {
@@ -286,6 +277,8 @@ const WorkSpace = () => {
   const handleDateReminder = async (date: Date | null, event: any) => {
     await event.preventDefault();
 
+    const today = new Date();
+
     today.setUTCHours(0, 0, 0, 0);
     if (date) {
       const selectedDate = new Date(date);
@@ -326,7 +319,12 @@ const WorkSpace = () => {
 
   const handleDeleteTaskReminder = async () => {
     try {
+      const completedTasks = taskToComplete.map(async (task) => {
+        await axiosURL.delete(`/task/${task.id}`);
+      });
+      await Promise.all(completedTasks);
       await dispatch(getTasksAPI());
+      handleCompleteTaskClose();
       toast.success("Tarea Completada!");
     } catch (error) {
       if (error instanceof Error) console.error(error.message);
