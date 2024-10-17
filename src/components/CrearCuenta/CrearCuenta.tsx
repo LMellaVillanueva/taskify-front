@@ -36,10 +36,10 @@ const CrearCuenta = () => {
       }
       const { data } = await axiosURL.post("/user", newUser);
       const userLocaleStorage = {
-        id: data.user.id,
-        name: data.user.name,
-        email: data.user.email,
-        tasks: data.user.tasks,
+        id: data.id,
+        name: data.name,
+        email: data.email,
+        tasks: data.tasks,
       };
       if (data) {
         dispatch(logOutUser());

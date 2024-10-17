@@ -88,66 +88,100 @@ const WorkSpace = () => {
       to_email: user[0]?.email,
     });
   }, []);
-
+console.log(user[0]?.name)
+console.log(taskToComplete)
 
   //! comparar la fecha del recordatorio con la fecha actual
   useEffect(() => {
-    const today = new Date();
-    let tasksToComplete: TasksList = [];
+    const intervalId = setInterval(() => {
+      const today = new Date();
+      let tasksToComplete: TasksList = [];
+  
+      userTasks.forEach((task) => {
+        const reminderDate = new Date(task.reminder);
+  
+        const reminderCoincidence = reminderDate.getTime() <= today.getTime();
+        
+        if (reminderCoincidence) {
+          tasksToComplete.push(task);
 
-    userTasks.forEach((task) => {
-      const reminderDate = new Date(task.reminder);
-
-      const reminderCoincidence = reminderDate.getTime() <= today.getTime();
-console.log(reminderCoincidence)
-      if (reminderCoincidence) {
-        tasksToComplete.push(task);
-        //!para usarlo como array de dependencias en useEffect del modal
-        setTaskToComplete([...taskToComplete, task]);
-      }
-    });
-
-    const taskNames = tasksToComplete
+          if (!taskToComplete.some((taskSaved) => taskSaved.id === task.id)) {
+            //!para usarlo como array de dependencias en useEffect del modal
+            setTaskToComplete([...taskToComplete, task]);
+            setShowModal(!showModal)
+          }
+        }
+      });
+      
+      const taskNames = tasksToComplete
       .map((task) => task.description)
       .join(", ");
+      
+      if (taskToComplete.length && !taskToComplete.some((task) => task.completed)) {
+        const updatedInfo = { ...info, message: taskNames };
+        
+        setInfo(updatedInfo);
 
-    if (tasksToComplete.length) {
-      const updatedInfo = { ...info, message: taskNames };
+        console.log('RECORDATORIO ENVIADO!')
 
-      setInfo(updatedInfo);
-
-      emailjs
-        .send("service_0jum38a", "template_w8rf65t", updatedInfo, {
-          publicKey: "zADAsfTnn9pOJcyPO",
-        })
-        .then(
-          async () => {
-            setInfo({ ...info, message: "" });
-
-            //al enviar el correo se actualiza al task en completed true
+        const mailSimulated = async () => {
+          try {
             const completedTasks = tasksToComplete.map(async (task) => {
-              await axiosURL.put(`/task/${task.id}`, {
-                completed: true,
-              });
+            const { data } = await axiosURL.put(`/task/${task.id}`, {
+              completed: true,
             });
-            await Promise.all(completedTasks);
-            setShowModal(true);
-          },
-          (error) => {
-            console.log("FAILED...", error.text);
-            toast.error("Recordatorio no enviado");
+            return data;
+          });
+          const allTasksCompleted = await Promise.all(completedTasks);
+          setTaskToComplete(allTasksCompleted);
+          console.log(completedTasks)
+          setShowModal(true);
+            
+          } catch (error) {
+        if (error instanceof Error) console.error(error);
           }
-        );
+          
+        // emailjs
+        // .send("service_0jum38a", "template_w8rf65t", updatedInfo, {
+          //   publicKey: "zADAsfTnn9pOJcyPO",
+          // })
+          // .then(
+        //   async () => {
+        //     setInfo({ ...info, message: "" });
+            
+        //     // al enviar el correo se actualiza el task a completed true
+          //   const completedTasks = tasksToComplete.map((task) => {
+          //     axiosURL.put(`/task/${task.id}`, {
+          //       completed: true,
+          //     });
+          //     setTaskToComplete([task]);
+          //   });
+          //   await Promise.all(completedTasks);
+          //   setShowModal(true);
+          // },
+        //   (error) => {
+        //     console.log("FAILED...", error.text);
+        //     toast.error("Recordatorio no enviado");
+        //     }
+        //   );
+      }
+      mailSimulated();
     }
-  }, []);
+    }, 10000);
+  
+    return () => clearInterval(intervalId);
+  }, [userTasks, info]);
+  
 
   useEffect(() => {
     //verificar si una tarea esta completa y ya se envió el correo
-    const reminderSent = userTasks.some((task) => task.completed === true);
+    const reminderSent = taskToComplete.some((task) => task.completed === true);
 
     if (reminderSent) {
-      setTaskCompletedOpen(true);
-      setTaskCompletedClose(false);
+      setTimeout(() => {
+        setTaskCompletedOpen(true);
+        setTaskCompletedClose(false);
+      }, 10000);
     } else {
       handleCompleteTaskClose();
     }
@@ -319,12 +353,19 @@ console.log(reminderCoincidence)
 
   const handleDeleteTaskReminder = async () => {
     try {
+      const updateToElim = taskToComplete.map(async (task) => {
+        await axiosURL.put(`/task/${task.id}`, { elim: true });
+      });
+      await Promise.all(updateToElim);
+
       const completedTasks = taskToComplete.map(async (task) => {
         await axiosURL.delete(`/task/${task.id}`);
       });
       await Promise.all(completedTasks);
+
       await dispatch(getTasksAPI());
       handleCompleteTaskClose();
+      setTaskToComplete([]);
       toast.success("Tarea Completada!");
     } catch (error) {
       if (error instanceof Error) console.error(error.message);
@@ -550,13 +591,22 @@ console.log(reminderCoincidence)
         </section>
         {taskCompletedOpen && (
           <div
-            className={`absolute inset-0 m-auto bg-white w-4/5 h-3/4 text-black border border-black rounded-lg ${
+            className={`absolute top-0 m-auto p-6 flex flex-col text-center bg-white w-3/5 h-3/4 text-black border border-black rounded-lg ${
               taskCompletedClose ? styles.close : styles.open
             }`}
           >
-            <span>¿Quieres completar esta tarea?</span>
-            <button onClick={handleDeleteTaskReminder}>Completar Tarea</button>
             <button onClick={handleCompleteTaskClose}>X</button>
+            <h1 className="font-titles font-bold">Recordatorio enviado!</h1>
+            <span className="font-text">¿Qué quieres hacer con esta/as tarea/as?</span>
+            {taskToComplete.map((task) => (
+              <main>
+                <h2 className="font-titles font-bold">{task.description}</h2>
+              </main>
+            ))}
+            <button className="hover:underline" onClick={handleDeleteTaskReminder}>Completar Tarea</button>
+
+            <h2>Actualizar Tarea</h2>
+              {/* Crear componente para actualizar la tarea */}
           </div>
         )}
       </main>
