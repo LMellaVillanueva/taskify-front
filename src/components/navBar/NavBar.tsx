@@ -104,7 +104,7 @@ const NavBar = () => {
             <img
               src={logo}
               alt="logoTaskify"
-              className="w-1/2 md:w-1/2 lg:w-16 rounded-full m-auto"
+              className="w-1/2 md:w-1/4 lg:w-16 rounded-full m-auto"
             />
             <p className="text-center md:text-sm">La armonía de tu desorden</p>
           </header>
