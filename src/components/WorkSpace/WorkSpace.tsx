@@ -594,8 +594,8 @@ const WorkSpace = () => {
         </section>
         {taskCompletedOpen && (
           <div
-            className={`fixed inset-0 lg:inset-auto lg:top-0 m-auto p-6 lg:mt-5 flex flex-col gap-8 lg:gap-7 text-center bg-purple-700 opacity-95 w-4/5 h-5/6 lg:w-3/5 lg:h-5/6 text-black border border-black rounded-lg ${
-              taskCompletedClose ? styles.close : styles.open
+            className={`fixed inset-0 lg:inset-auto lg:top-0 m-auto p-6 lg:mt-5 flex flex-col gap-8 lg:gap-7 text-center bg-purple-900 bg-opacity-95 text-black dark:text-white w-4/5 h-5/6 lg:w-3/5 lg:h-fit border border-black rounded-lg ${
+              taskCompletedClose ? styles.close : 'animate-fade-down animate-duration-700'
             }`}
           >
             <button onClick={handleCompleteTaskClose} className="w-fit mx-auto">
@@ -610,7 +610,7 @@ const WorkSpace = () => {
 
             <section className="flex flex-col">
               {taskToComplete.map((task) => (
-                <main>
+                <main key={task.id}>
                   <h2 className="font-titles font-bold text-xl md:text-3xl">
                     - {task.description}
                   </h2>
@@ -618,18 +618,28 @@ const WorkSpace = () => {
               ))}
             </section>
 
+            {taskToComplete.length > 1 ? (
+            <button
+              className="hover:underline"
+              onClick={handleDeleteTaskReminder}
+            >
+              Completar Tareas
+            </button>
+
+            ) : (
             <button
               className="hover:underline"
               onClick={handleDeleteTaskReminder}
             >
               Completar Tarea
             </button>
+            )}
 
-            <div className="w-3/4 border mx-auto border-black"></div>
+            <div className="w-3/4 border mx-auto border-black dark:border-white"></div>
 
-            <h2>Actualizar Tarea</h2>
-            <UpdateCompletedTask />
-            <button>Cancelar</button>
+            <h2 className="font-titles font-semibold">Actualizar Tarea</h2>
+            <UpdateCompletedTask tasksToUpdate={taskToComplete} handleCompleteTaskClose={handleCompleteTaskClose} setTaskToUpdate={setTaskToComplete}/>
+            <button onClick={handleCompleteTaskClose}>Cancelar</button>
           </div>
         )}
       </main>
