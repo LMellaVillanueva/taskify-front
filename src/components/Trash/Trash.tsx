@@ -1,19 +1,25 @@
 import { useEffect, useState } from "react";
 import NavBar from "../navBar/NavBar";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
-import { getTasksAPI, getTasksDeletedAPI, searchATask } from "../../redux/slices/Tasks/taskSlice";
+import {
+  getTasksAPI,
+  getTasksDeletedAPI,
+  searchATask,
+} from "../../redux/slices/Tasks/taskSlice";
 import axiosURL from "../../axiosConfig/axiosURL";
 import { Link } from "react-router-dom";
-import LabelImportantIcon from '@mui/icons-material/LabelImportant';
+import LabelImportantIcon from "@mui/icons-material/LabelImportant";
 import Footer from "../Footer/Footer";
 
 const Trash = () => {
   const dispatch = useAppDispatch();
   const [mediumScreen, setMediumScreen] = useState(window.innerWidth <= 1024);
-  const user = useAppSelector(state => state.User.user);
+  const user = useAppSelector((state) => state.User.user);
   const deleteTasks = useAppSelector((state) => state.Task.tasksDeleted);
-  const tasksDeleted = deleteTasks.filter((task) => task.user?.id === user[0]?.id)
-  
+  const tasksDeleted = deleteTasks.filter(
+    (task) => task.user?.id === user[0]?.id
+  );
+
   useEffect(() => {
     window.scrollTo(0, 0);
     const handleResize = () => {
@@ -82,16 +88,18 @@ const Trash = () => {
               Tareas Completadas
             </h1>
             <div className="flex p-5 w-4/5 gap-8 justify-center">
-
-            <input
-            onChange={handleSearch}
-            type="text"
-            placeholder="Buscar tarea..."
-            className="rounded-xl p-1 text-black border border-black w-72"
-            />
-            <Link to={"/workSpace"} className="dark:text-white text-lg px-5 py-2 rounded-xl bg-neutral-900 hover:bg-stone-700 text-white border-white border font-text">
-              Volver
-            </Link>
+              <input
+                onChange={handleSearch}
+                type="text"
+                placeholder="Buscar tarea..."
+                className="rounded-xl p-1 text-black border border-black w-72"
+              />
+              <Link
+                to={"/workSpace"}
+                className="dark:text-white text-lg px-5 py-2 rounded-xl bg-neutral-900 hover:bg-stone-700 text-white border-white border font-text"
+              >
+                Volver
+              </Link>
             </div>
             <section className="w-5/6 p-5 md:p-10">
               {tasksDeleted.length ? (
@@ -101,14 +109,17 @@ const Trash = () => {
                     className="border border-black rounded-xl p-5 flex flex-col items-center gap-5 mb-5"
                     style={{ backgroundColor: task.color }}
                   >
-                    <p className="font-medium text-xl"><LabelImportantIcon/>{task.description}</p>
+                    <p className="font-medium text-xl">
+                      <LabelImportantIcon />
+                      {task.description}
+                    </p>
                     <div className="border border-black rounded-xl w-3/4"></div>
-                    <p>
-                      Creada el: <b></b>
-                      {new Date(task?.date).toLocaleString("es-ES", {
-                        year: "numeric",
+                    <p className="text-center"> Completada el: <b></b>
+                      {new Date(task?.reminder).toLocaleString("es-ES", {
                         month: "long",
                         day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
                       })}
                     </p>
                     <div className="flex justify-between w-full">
@@ -144,12 +155,15 @@ const Trash = () => {
                 Tareas Completadas
               </h1>
               <input
-            onChange={handleSearch}
+                onChange={handleSearch}
                 type="text"
                 className="w-96 rounded-xl p-1 text-black border border-black"
                 placeholder="Buscar tarea..."
               />
-              <Link to={"/workSpace"} className="dark:text-white text-lg px-5 py-2 rounded-xl bg-neutral-900 hover:bg-stone-700 text-white border-white border font-text">
+              <Link
+                to={"/workSpace"}
+                className="dark:text-white text-lg px-5 py-2 rounded-xl bg-neutral-900 hover:bg-stone-700 text-white border-white border font-text"
+              >
                 Volver
               </Link>
             </header>
@@ -162,15 +176,17 @@ const Trash = () => {
                     className="border border-black rounded-xl p-5 flex flex-col items-center gap-5 mb-5 py-5"
                     style={{ backgroundColor: task.color }}
                   >
-                    <p className="font-medium text-2xl"><LabelImportantIcon/>{task.description}</p>
+                    <p className="font-medium text-2xl">
+                      <LabelImportantIcon />
+                      {task.description}
+                    </p>
                     <div className="border border-black rounded-xl w-1/2"></div>
-                    <p>
-                      {" "}
-                      Creada el: <b></b>
-                      {new Date(task?.date).toLocaleString("es-ES", {
-                        year: "numeric",
+                    <p className="text-center"> Completada el: <b></b>
+                      {new Date(task?.reminder).toLocaleString("es-ES", {
                         month: "long",
                         day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
                       })}
                     </p>
                     <div className="flex justify-between w-full">

@@ -7,12 +7,14 @@ interface Tasks {
   allTasks: TasksList;
   searchTasks: TasksList;
   tasksDeleted: TasksList;
+  searchTasksDeleted: TasksList;
 }
 
 const initialState: Tasks = {
   allTasks: [],
   searchTasks: [],
   tasksDeleted: [],
+  searchTasksDeleted: [],
 };
 
 export const TaskSlice = createSlice({
@@ -25,13 +27,13 @@ export const TaskSlice = createSlice({
     },
     getTasksDeleted: (state, action) => {
       state.tasksDeleted = [...action.payload];
-      state.searchTasks = [...action.payload];
+      state.searchTasksDeleted = [...action.payload];
     },
-    searchTasks: (state, action) => {
+    searchTask: (state, action) => {
       state.allTasks = state.searchTasks.filter((task) => {
         return task.description.toUpperCase().startsWith(action.payload);
       });
-      state.tasksDeleted = state.searchTasks.filter((task) => {
+      state.tasksDeleted = state.searchTasksDeleted.filter((task) => {
         return task.description.toUpperCase().startsWith(action.payload);
       })
     },
@@ -69,7 +71,7 @@ export const getTasksDeletedAPI = () => async (dispatch: AppDispatch) => {
 
 export const searchATask = (task: string) => (dispatch: AppDispatch) => {
   if (task) {
-    dispatch(searchTasks(task));
+    dispatch(searchTask(task));
   }
 };
 
@@ -90,5 +92,5 @@ export const reOrderTasks =
   };
 
 export default TaskSlice.reducer;
-export const { getTasks, getTasksDeleted, searchTasks, newOrder } =
+export const { getTasks, getTasksDeleted, searchTask, newOrder } =
   TaskSlice.actions;

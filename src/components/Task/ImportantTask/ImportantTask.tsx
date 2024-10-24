@@ -85,9 +85,17 @@ const ImportantTask: React.FC<Prop> = ({ task }) => {
         style={{ backgroundColor: task.color }}
         className="flex flex-col rounded-xl border gap-2 border-black items-center justify-center p-4 text-black md:w-56"
       >
-        <div {...listeners} className="cursor-pointer flex flex-col items-center justify-center w-28 md:w-48">
+        <div {...listeners} className="cursor-pointer flex flex-col items-center justify-center gap-3 w-28 md:w-48">
           <h3><LabelImportantIcon/>{task.description}</h3>
           <div className="border border-black w-32 mx-auto"></div>
+          <p className="text-center">
+          {new Date(task?.reminder).toLocaleString("es-ES", {
+            month: "long",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+        </p>
         </div>
 
         <div className="p-2 flex flex-col items-center justify-center gap-2">

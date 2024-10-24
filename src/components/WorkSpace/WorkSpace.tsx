@@ -400,14 +400,25 @@ const WorkSpace = () => {
     }, 300);
   };
 
+  const createTaskFromSearch =
+    descriptionNotCreated.length > 0 &&
+    importantTasks.length <= 0 &&
+    urgencyTask.length <= 0;
+
   return (
     <React.Fragment>
       <NavBar />
       <main
         className={`pt-64 md:pt-52 px-5 pb-32 lg:pt-32 flex flex-col lg:flex-row w-full justify-around items-center lg:items-baseline overflow-hidden gap-16 lg:gap-0 dark:bg-neutral-900 text-black dark:text-white bg-gradient-to-bl from-white via-violet-200 to-purple-600 dark:bg-gradient-to-br dark:from-neutral-700 dark:via-black dark:to-violet-950`}
       >
-        <section className="p-2 md:p-10 lg:p-5 lg:w-1/4 h-fit border border-black dark:border-white rounded-xl">
-          <h1 className="text-center text-4xl">Crear Nueva Tarea</h1>
+        <section
+          className={`p-2 md:p-10 lg:p-5 lg:w-1/4 h-fit border border-black dark:border-white rounded-xl ${
+            createTaskFromSearch ? "opacity-10" : "opacity-100"
+          } transition-all`}
+        >
+          <h1 className="text-center text-4xl font-titles">
+            Crear Nueva Tarea
+          </h1>
           <form
             onSubmit={handleSubmit}
             className="flex flex-col gap-10 md:gap-7 pt-5 h-96 items-center justify-center md:justify-around"
@@ -423,6 +434,7 @@ const WorkSpace = () => {
             ></textarea>
             <div className="flex justify-around items-center gap-10 md:gap-0 w-4/6 md:w-full">
               <button
+                disabled={createTaskFromSearch}
                 type="button"
                 onClick={handleUrgency}
                 name="urgency"
@@ -431,6 +443,7 @@ const WorkSpace = () => {
                 <NewReleasesIcon fontSize="small" /> Urgente
               </button>
               <button
+                disabled={createTaskFromSearch}
                 type="button"
                 onClick={handleCalendarOpen}
                 className="flex items-center gap-2 p-3 rounded-lg bg-yellow-500 hover:bg-yellow-400 dark:bg-amber-700 dark:hover:bg-amber-800 border-black dark:border-white border hover:shadow-sm hover:shadow-black dark:hover:shadow-white transition-colors"
@@ -444,7 +457,11 @@ const WorkSpace = () => {
                       calendarClose ? styles.close : styles.open
                     }`}
                   >
-                    <button type="button" onClick={handleCalendarClose}>
+                    <button
+                      disabled={createTaskFromSearch}
+                      type="button"
+                      onClick={handleCalendarClose}
+                    >
                       <CloseIcon />
                     </button>
                     <section>
@@ -475,9 +492,10 @@ const WorkSpace = () => {
 
             <div className="flex justify-between gap-10 md:gap-0 w-3/4 md:w-full">
               <button
+                disabled={createTaskFromSearch}
                 type="button"
                 onClick={handleColorOpen}
-                className="p-1 rounded-full bg-red-400 hover:bg-red-500 bg-gradient-to-br from-yellow-500 to-purple-600 dark:bg-gradient-to-br dark:from-amber-500 dark:via-violet-700 dark:to-black dark:hover:bg-red-800 border border-black dark:border-white text-transparent text-2xl hover:shadow-sm hover:shadow-black dark:hover:shadow-white transition-colors"
+                className="p-1 rounded-full bg-gradient-to-br from-yellow-500 to-purple-600 hover:bg-gradient-to-br hover:from-amber-400 hover:to-violet-500 dark:bg-gradient-to-br dark:from-amber-500 dark:via-violet-700 dark:to-black border border-black dark:border-white text-transparent text-2xl hover:shadow-sm hover:shadow-black dark:hover:shadow-white transition-colors"
               >
                 {" "}
                 llm
@@ -494,6 +512,7 @@ const WorkSpace = () => {
                 />
               )}
               <button
+                disabled={createTaskFromSearch}
                 type="submit"
                 className="p-2 rounded-lg bg-lime-400 hover:bg-lime-300 dark:bg-purple-800 dark:hover:bg-purple-900 border-black dark:border-white border hover:shadow-sm hover:shadow-black dark:hover:shadow-white transition-colors"
               >
@@ -512,19 +531,13 @@ const WorkSpace = () => {
             style={{ width: "300px" }}
             className="rounded-xl p-1 text-black border border-black"
           />
-          {descriptionNotCreated.length > 0 && importantTasks.length <= 0 && (
+          {createTaskFromSearch && (
             <form
               onSubmit={handleSubmit}
               className="border border-black dark:border-white rounded-xl flex flex-col items-center justify-evenly p-3 h-72 animate-fade"
             >
               <h3>¿Quieres crear esta tarea?</h3>
-              <input
-                type="text"
-                placeholder={descriptionNotCreated}
-                className="text-black rounded-lg p-1"
-                onChange={handleNewTaskSearchDescription}
-                value={descriptionNotCreated}
-              />
+              <span className="">{descriptionNotCreated}</span>
               <button onClick={handleUrgency}>Urgente</button>
               <div className="flex justify-evenly w-full">
                 <button
@@ -547,7 +560,9 @@ const WorkSpace = () => {
         </section>
 
         <section className="p-4 border border-black dark:border-white rounded-xl lg:w-1/2">
-          <h1 className="text-center text-4xl lg:pb-5">Mis Tareas</h1>
+          <h1 className="text-center text-4xl lg:pb-8 underline font-titles">
+            Mis Tareas
+          </h1>
           <article className="flex flex-col items-center md:items-start justify-center gap-16 md:flex-row md:gap-15 pt-5 p-10 lg:p-0">
             <div className="text-center flex flex-col gap-2">
               <h2>Urgente</h2>
@@ -571,7 +586,6 @@ const WorkSpace = () => {
                 strategy={verticalListSortingStrategy}
               >
                 <div className="text-center flex flex-col gap-2">
-                  <h2>Importancia</h2>
                   <article
                     key={task.id}
                     className="flex flex-col-reverse items-center justify-around h-96 border border-black dark:border-white rounded-xl p-4 w-44 md:w-72 overflow-y-auto dark:text-black"
@@ -595,8 +609,12 @@ const WorkSpace = () => {
         {taskCompletedOpen && (
           <div
             className={`fixed inset-0 lg:inset-auto lg:top-0 m-auto p-6 lg:mt-5 flex flex-col gap-8 lg:gap-7 text-center bg-purple-400
-              dark:bg-gradient-to-tl dark:from-purple-700 dark:to-black bg-opacity-95 text-black dark:text-white w-4/5 h-5/6 lg:w-7/12 lg:h-5/6 overflow-auto ${styles.barr} border border-black rounded-lg ${
-              taskCompletedClose ? styles.close : 'animate-fade-down animate-duration-700'
+              dark:bg-gradient-to-tl dark:from-purple-700 dark:to-black bg-opacity-95 text-black dark:text-white w-4/5 h-5/6 lg:w-7/12 lg:h-5/6 overflow-auto ${
+                styles.barr
+              } border border-black rounded-lg ${
+              taskCompletedClose
+                ? styles.close
+                : "animate-fade-down animate-duration-700"
             }`}
           >
             <button onClick={handleCompleteTaskClose} className="w-fit mx-auto">
@@ -620,27 +638,31 @@ const WorkSpace = () => {
             </section>
 
             {taskToComplete.length > 1 ? (
-            <button
-              className=" text-lg font-medium dark:hover:bg-white hover:bg-black dark:hover:text-black hover:text-white transition-colors w-fit m-auto p-2 rounded-lg font-serif"
-              onClick={handleDeleteTaskReminder}
-            >
-              Completar Tareas
-            </button>
-
+              <button
+                className=" text-lg font-medium dark:hover:bg-white hover:bg-black dark:hover:text-black hover:text-white transition-colors w-fit m-auto p-2 rounded-lg font-serif"
+                onClick={handleDeleteTaskReminder}
+              >
+                Completar Tareas
+              </button>
             ) : (
-            <button
-              className=" text-lg font-medium dark:hover:bg-white hover:bg-black dark:hover:text-black hover:text-white transition-colors w-fit m-auto p-2 rounded-lg font-serif"
-              onClick={handleDeleteTaskReminder}
-            >
-              Completar Tarea
-            </button>
+              <button
+                className=" text-lg font-medium dark:hover:bg-white hover:bg-black dark:hover:text-black hover:text-white transition-colors w-fit m-auto p-2 rounded-lg font-serif"
+                onClick={handleDeleteTaskReminder}
+              >
+                Completar Tarea
+              </button>
             )}
 
             <div className="w-3/4 border mx-auto border-black dark:border-white"></div>
 
-            <h2 className="font-titles font-semibold text-3xl">Actualizar Tarea</h2>
-            <UpdateCompletedTask tasksToUpdate={taskToComplete} handleCompleteTaskClose={handleCompleteTaskClose} setTaskToUpdate={setTaskToComplete}/>
-            
+            <h2 className="font-titles font-semibold text-3xl">
+              Actualizar Tarea
+            </h2>
+            <UpdateCompletedTask
+              tasksToUpdate={taskToComplete}
+              handleCompleteTaskClose={handleCompleteTaskClose}
+              setTaskToUpdate={setTaskToComplete}
+            />
           </div>
         )}
       </main>
