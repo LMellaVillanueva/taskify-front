@@ -10,7 +10,8 @@ export default {
     fontFamily: {
       'serif': ["Play", 'sans-serif'],
       'titles': ["Changa", 'sans-serif'],
-      'text': ["Mohave", 'sans-serif']
+      'text': ["Mohave", 'sans-serif'],
+      'buttons': ["Chakra Petch", 'sans-serif'],
     }
   },
   plugins: [

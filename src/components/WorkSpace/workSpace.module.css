@@ -59,3 +59,21 @@ article {
                        var(--sb-track-color);
     }
   }
+
+  .barr::-webkit-scrollbar {
+    width: 5px; /* Ancho de la barra de desplazamiento */
+  }
+  
+  .barr::-webkit-scrollbar-track {
+    background: #240547; /* Color del fondo de la barra de desplazamiento */
+    border-radius: 10px; /* Bordes redondeados */
+  }
+  
+  .barr::-webkit-scrollbar-thumb {
+    background: #471179; /* Color de la barra */
+    border-radius: 10px; /* Bordes redondeados de la barra */
+  }
+  
+  .barr::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Color de la barra cuando se pasa el mouse por encima */
+  }

@@ -594,24 +594,25 @@ const WorkSpace = () => {
         </section>
         {taskCompletedOpen && (
           <div
-            className={`fixed inset-0 lg:inset-auto lg:top-0 m-auto p-6 lg:mt-5 flex flex-col gap-8 lg:gap-7 text-center bg-purple-900 bg-opacity-95 text-black dark:text-white w-4/5 h-5/6 lg:w-3/5 lg:h-fit border border-black rounded-lg ${
+            className={`fixed inset-0 lg:inset-auto lg:top-0 m-auto p-6 lg:mt-5 flex flex-col gap-8 lg:gap-7 text-center bg-purple-400
+              dark:bg-gradient-to-tl dark:from-purple-700 dark:to-black bg-opacity-95 text-black dark:text-white w-4/5 h-5/6 lg:w-7/12 lg:h-5/6 overflow-auto ${styles.barr} border border-black rounded-lg ${
               taskCompletedClose ? styles.close : 'animate-fade-down animate-duration-700'
             }`}
           >
             <button onClick={handleCompleteTaskClose} className="w-fit mx-auto">
               <CloseIcon />
             </button>
-            <h1 className="font-titles font-bold text-2xl md:text-4xl">
+            <h1 className="font-titles font-bold text-2xl md:text-5xl">
               Recordatorio enviado!
             </h1>
-            <span className="font-text text-lg md:text-2xl">
+            <span className="font-text text-lg md:text-3xl">
               ¿Qué quieres hacer con esta/as tarea/as?
             </span>
 
             <section className="flex flex-col">
               {taskToComplete.map((task) => (
-                <main key={task.id}>
-                  <h2 className="font-titles font-bold text-xl md:text-3xl">
+                <main key={task.id} className="p-1.5">
+                  <h2 className="font-titles font-bold text-xl md:text-3xl border-4 border-black dark:border-white w-1/2 rounded-xl m-auto p-2">
                     - {task.description}
                   </h2>
                 </main>
@@ -620,7 +621,7 @@ const WorkSpace = () => {
 
             {taskToComplete.length > 1 ? (
             <button
-              className="hover:underline"
+              className=" text-lg font-medium dark:hover:bg-white hover:bg-black dark:hover:text-black hover:text-white transition-colors w-fit m-auto p-2 rounded-lg font-serif"
               onClick={handleDeleteTaskReminder}
             >
               Completar Tareas
@@ -628,7 +629,7 @@ const WorkSpace = () => {
 
             ) : (
             <button
-              className="hover:underline"
+              className=" text-lg font-medium dark:hover:bg-white hover:bg-black dark:hover:text-black hover:text-white transition-colors w-fit m-auto p-2 rounded-lg font-serif"
               onClick={handleDeleteTaskReminder}
             >
               Completar Tarea
@@ -637,9 +638,9 @@ const WorkSpace = () => {
 
             <div className="w-3/4 border mx-auto border-black dark:border-white"></div>
 
-            <h2 className="font-titles font-semibold">Actualizar Tarea</h2>
+            <h2 className="font-titles font-semibold text-3xl">Actualizar Tarea</h2>
             <UpdateCompletedTask tasksToUpdate={taskToComplete} handleCompleteTaskClose={handleCompleteTaskClose} setTaskToUpdate={setTaskToComplete}/>
-            <button onClick={handleCompleteTaskClose}>Cancelar</button>
+            
           </div>
         )}
       </main>
