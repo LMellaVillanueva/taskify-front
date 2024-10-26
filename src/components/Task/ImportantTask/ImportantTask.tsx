@@ -43,7 +43,7 @@ const ImportantTask: React.FC<Prop> = ({ task }) => {
 
   const handleComplete = async (id: number): Promise<void> => {
     try {
-      const { data } = await axiosURL.put(`/task/${id}`, { elim: true });
+      const { data } = await axiosURL.put(`/task/${id}`, { elim: true, completed: true });
       if (data) {
         await dispatch(getTasksAPI());
         toast.success('Tarea Completada', {duration: 1500})
@@ -86,9 +86,9 @@ const ImportantTask: React.FC<Prop> = ({ task }) => {
         className="flex flex-col rounded-xl border gap-2 border-black items-center justify-center p-4 text-black md:w-56"
       >
         <div {...listeners} className="cursor-pointer flex flex-col items-center justify-center gap-3 w-28 md:w-48">
-          <h3><LabelImportantIcon/>{task.description}</h3>
+          <h3 className="font-titles text-lg"><LabelImportantIcon/>{task.description}</h3>
           <div className="border border-black w-32 mx-auto"></div>
-          <p className="text-center">
+          <p className="text-center text-sm">  
           {new Date(task?.reminder).toLocaleString("es-ES", {
             month: "long",
             day: "numeric",
@@ -98,9 +98,9 @@ const ImportantTask: React.FC<Prop> = ({ task }) => {
         </p>
         </div>
 
-        <div className="p-2 flex flex-col items-center justify-center gap-2">
-          <button className="hover:underline" onClick={() => handleComplete(task.id)}>Completar Tarea</button>
+        <div className="p-2 flex flex-col items-center justify-center gap-2 font-buttons">
           <button className="hover:underline" onClick={() => updateUrgency(task.id)}>Urgente</button>
+          <button className="hover:underline" onClick={() => handleComplete(task.id)}>Completar Tarea</button>
         </div>
       </section>
     </main>

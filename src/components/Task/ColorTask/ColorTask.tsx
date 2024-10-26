@@ -42,7 +42,7 @@ const ColorTask: React.FC<Props> = ({
 
   return (
     <main
-      className={`absolute flex flex-col gap-10 items-center m-auto inset-0 w-2/3 md:w-1/4 h-fit bg-gradient-to-tr from-amber-200 to-fuchsia-300 dark:bg-gradient-to-tr dark:from-amber-700 dark:via-black dark:to-violet-600 rounded-xl p-5 border border-black dark:border-white z-10 ${
+      className={`absolute flex flex-col gap-10 items-center m-auto inset-0 w-2/3 md:w-1/4 h-fit bg-gradient-to-tr from-amber-200 to-fuchsia-300 dark:bg-gradient-to-tr dark:from-amber-700 dark:via-black dark:to-violet-600 rounded-xl p-5 border border-black z-20 ${
         colorClose ? styles.close : styles.open
       }`}
     >
@@ -57,7 +57,7 @@ const ColorTask: React.FC<Props> = ({
           <button
             key={oneColor.color}
             type="button"
-            className="focus:shadow-black focus:shadow-lg bg-transparent rounded-full"
+            className="focus:shadow-black dark:focus:shadow-white focus:shadow-lg bg-transparent rounded-full"
             onClick={() => {
               handleColor(oneColor.color);
             }}

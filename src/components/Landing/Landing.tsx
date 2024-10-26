@@ -5,6 +5,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useAppSelector } from "../../redux/store";
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useEffect } from "react";
+import styles from './landing.module.css';
 
 const Landing = () => {
   const location = useLocation();
@@ -47,7 +48,7 @@ const Landing = () => {
               )}
             </p>
           </div>
-          <img src={taskify1} alt="image" className={`w-96 lg:w-5/12`} />
+          <img src='https://img.freepik.com/vector-premium/pensamientos-caos-estilo-linea-hombre-ideas_824631-146.jpg' alt="image" className={`w-96 lg:w-5/12 ${styles.img}`} />
         </article>
 
         <section className={`flex flex-col items-center py-20 lg:py-16`}>

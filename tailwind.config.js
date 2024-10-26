@@ -11,7 +11,7 @@ export default {
       'serif': ["Play", 'sans-serif'],
       'titles': ["Changa", 'sans-serif'],
       'text': ["Mohave", 'sans-serif'],
-      'buttons': ["Chakra Petch", 'sans-serif'],
+      'buttons': ["Roboto", 'sans-serif'],
     }
   },
   plugins: [
