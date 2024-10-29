@@ -38,7 +38,7 @@ function App() {
               unstyled: true,
               classNames: {
                 toast:
-                  "bg-violet-100 dark:bg-black shadow-violet-950 font-serif shadow-lg dark:shadow-violet-800 w-full rounded-lg border border-black flex justify-start gap-5 items-center p-3 text-black dark:text-white",
+                  "bg-violet-100 dark:bg-black shadow-violet-950 font-serif shadow-lg dark:shadow-violet-800 w-full rounded-lg border border-black flex justify-start gap-5 items-center p-3 text-black dark:text-white z-50",
                 title: "font-semibold",
               },
             }}

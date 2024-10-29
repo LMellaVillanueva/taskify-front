@@ -634,7 +634,7 @@ const WorkSpace = () => {
         </section>
         {taskCompletedOpen && (
           <div
-            className={`fixed inset-0 lg:inset-auto lg:top-0 m-auto p-6 lg:mt-5 flex flex-col gap-8 lg:gap-7 text-center bg-purple-400 z-50
+            className={`fixed inset-0 lg:inset-auto lg:top-0 m-auto p-6 lg:mt-5 flex flex-col gap-8 lg:gap-7 text-center bg-purple-400
               dark:bg-gradient-to-tl dark:from-purple-700 dark:to-black bg-opacity-95 text-black dark:text-white w-4/5 h-5/6 lg:w-7/12 lg:h-5/6 overflow-auto ${
                 styles.barr
               } border border-black rounded-lg ${

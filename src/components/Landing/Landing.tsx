@@ -1,5 +1,7 @@
 import NavBar from "../navBar/NavBar";
 import taskify1 from "../../assets/taskify1.png";
+import img1 from '../../assets/img1.png';
+import img2 from '../../assets/img2.png';
 import Footer from "../Footer/Footer";
 import { Link, useLocation } from "react-router-dom";
 import { useAppSelector } from "../../redux/store";
@@ -90,22 +92,22 @@ const Landing = () => {
               <li>¡Listo! Tu tarea esta creada. Ya puedes comenzar con tu organización.</li>
             </ol>
           </header>
-          <img src={taskify1} alt="image2" className={`md:w-10/12 lg:w-5/12`} />
+          <img src={img1} alt="image2" className={`md:w-10/12 lg:w-5/12`} />
         </article>
 
         <article id="fnUrgency"
-          className={`text-center flex flex-col items-center gap-16 py-16`}
+          className={`text-center flex flex-col items-center gap-16 py-14`}
         >
-          <img src={taskify1} alt="image3" className={`w-96 lg:w-4/12`} />
+          <img src={img2} alt="image3" className={`w-96 lg:w-4/12`} />
           <header className={`lg:w-1/2`}>
             <h1 className="text-4xl md:text-5xl pb-10 font-titles">Función Urgency</h1>
             <p className="font-text text-xl">
               Ten siempre tus tareas urgentes organizadas. Gracias a la función
               'Urgency' solo tendrás una tarea urgente. Pero, ¿Por qué solo una?
               Porque así nunca perderás de vista tu tarea con mayor urgencia y
-              siempre estará a la vista en la sección 'Urgente'. Una vez que
+              siempre estará a la vista en la sección 'Tarea Urgente'. Una vez que
               completes tu tarea urgente, automáticamente la primera tarea que
-              creaste después de esa será la que
+              creaste será la que
               pasará a ser urgente, y así sucesivamente hasta completar todas
               tus tareas.
             </p>
