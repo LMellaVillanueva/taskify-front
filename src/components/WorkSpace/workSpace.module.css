@@ -32,22 +32,25 @@ textarea {
     }
 }
 
-article {
-    --sb-track-color: #232323;
-    --sb-thumb-color: #616161;
+article, textarea {
+    --sb-track-color: #240547;
+    --sb-thumb-color: #6118a5;
     --sb-size: 4px;
   }
   
-  article::-webkit-scrollbar {
+  article::-webkit-scrollbar,
+  textarea::-webkit-scrollbar {
     width: var(--sb-size)
   }
   
-  article::-webkit-scrollbar-track {
+  article::-webkit-scrollbar-track,
+  textarea::-webkit-scrollbar-track {
     background: var(--sb-track-color);
     border-radius: 5px;
   }
   
-  article::-webkit-scrollbar-thumb {
+  article::-webkit-scrollbar-thumb,
+  textarea::-webkit-scrollbar-thumb {
     background: var(--sb-thumb-color);
     border-radius: 5px;
     
@@ -61,19 +64,19 @@ article {
   }
 
   .barr::-webkit-scrollbar {
-    width: 5px; /* Ancho de la barra de desplazamiento */
+    width: 5px; 
   }
   
   .barr::-webkit-scrollbar-track {
-    background: #240547; /* Color del fondo de la barra de desplazamiento */
-    border-radius: 10px; /* Bordes redondeados */
+    background: #240547; 
+    border-radius: 10px;
   }
   
   .barr::-webkit-scrollbar-thumb {
-    background: #471179; /* Color de la barra */
-    border-radius: 10px; /* Bordes redondeados de la barra */
+    background: #471179; 
+    border-radius: 10px; 
   }
   
   .barr::-webkit-scrollbar-thumb:hover {
-    background: #555; /* Color de la barra cuando se pasa el mouse por encima */
+    background: #555; 
   }

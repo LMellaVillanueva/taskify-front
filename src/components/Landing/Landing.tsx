@@ -1,30 +1,30 @@
 import NavBar from "../navBar/NavBar";
-import taskify1 from "../../assets/taskify1.png";
-import img1 from '../../assets/img1.png';
-import img2 from '../../assets/img2.png';
+import img1 from "../../assets/img1.png";
+import img2 from "../../assets/img2.png";
 import Footer from "../Footer/Footer";
 import { Link, useLocation } from "react-router-dom";
 import { useAppSelector } from "../../redux/store";
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useEffect } from "react";
-import styles from './landing.module.css';
+import styles from "./landing.module.css";
 
 const Landing = () => {
   const location = useLocation();
   const { targetId } = location.state || {};
-  const user = useAppSelector(state => state.User.user);
+  const user = useAppSelector((state) => state.User.user);
 
   useEffect(() => {
     const section = document.getElementById(targetId);
     if (section) {
-      section.scrollIntoView({ behavior: 'smooth' });
+      section.scrollIntoView({ behavior: "smooth" });
     }
-  }, [targetId])
+  }, [targetId]);
 
   return (
     <>
       <NavBar />
-      <main id="intro" 
+      <main
+        id="intro"
         className={`lg:p-10 flex flex-col justify-start gap-20 md:gap-16 pt-64 md:pt-52 px-5 lg:pt-72 dark:bg-neutral-900 text-black dark:text-white bg-gradient-to-bl from-white via-violet-100 to-purple-600 dark:bg-gradient-to-br dark:from-neutral-700 dark:via-black dark:to-violet-950`}
       >
         <article
@@ -40,37 +40,47 @@ const Landing = () => {
               ordenar tu día, semana e incluso tu mes! Gracias al modelo
               productivo y organizacional de su <b></b>
               {user.length === 0 ? (
-              <span className="underline cursor-pointer">
-                <Link to={"/crearCuenta"}>Creación de Tareas.</Link>
-              </span>
+                <span className="underline cursor-pointer">
+                  <Link to={"/crearCuenta"}>Creación de Tareas.</Link>
+                </span>
               ) : (
-              <span className="underline cursor-pointer">
-                <Link to={"/workSpace"}>Creación de Tareas.</Link>
-              </span>
+                <span className="underline cursor-pointer">
+                  <Link to={"/workSpace"}>Creación de Tareas.</Link>
+                </span>
               )}
             </p>
           </div>
-          <img src='https://img.freepik.com/vector-premium/pensamientos-caos-estilo-linea-hombre-ideas_824631-146.jpg' alt="image" className={`w-96 lg:w-5/12 ${styles.img}`} />
+          <img
+            src="https://img.freepik.com/vector-premium/pensamientos-caos-estilo-linea-hombre-ideas_824631-146.jpg"
+            alt="image"
+            className={`w-96 lg:w-5/12 ${styles.img}`}
+          />
         </article>
 
+        <div className="w-4/5 rounded-full border border-black dark:border-white m-auto"></div>
         <section className={`flex flex-col items-center py-20 lg:py-16`}>
           <h2 className="text-4xl lg:text-5xl pb-5 lg:pb-10 text-center font-titles">
             Comienza tu Creación de Tareas aquí
           </h2>
           {user.length === 0 ? (
-          <Link to={"/crearCuenta"}>
-            <button className="flex items-center gap-1 text-xl border border-black dark:border-white rounded-lg p-3 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors">Comienza Ya! <ArrowForwardIcon/></button>
-          </Link>
+            <Link to={"/crearCuenta"}>
+              <button className="flex items-center gap-1 text-xl border border-black dark:border-white rounded-lg p-3 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors">
+                Comienza Ya! <ArrowForwardIcon />
+              </button>
+            </Link>
           ) : (
-          <Link to={"/workSpace"}>
-            <button className="flex items-center gap-1 text-xl border border-black dark:border-white rounded-lg p-3 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors">Comienza Ya! <ArrowForwardIcon/></button>
-          </Link>
+            <Link to={"/workSpace"}>
+              <button className="flex items-center gap-1 text-xl border border-black dark:border-white rounded-lg p-3 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors">
+                Comienza Ya! <ArrowForwardIcon />
+              </button>
+            </Link>
           )}
         </section>
+        <div className="w-4/5 rounded-full border border-black dark:border-white m-auto"></div>
 
-        <article 
+        <article
           id="steps"
-          className={`text-start flex flex-col justify-center gap-10 items-center lg:items-start lg:flex-row px-4 py-20`}
+          className={`text-start flex flex-col justify-center gap-10 items-center lg:items-start lg:flex-row px-4 py-28`}
         >
           <header className={`lg:w-1/2`}>
             <h1 className="text-4xl md:text-5xl pb-5 text-center font-titles">
@@ -84,37 +94,49 @@ const Landing = () => {
             <ol className={`list-decimal font-text text-xl`}>
               <li>Añade una descripción a tu tarea.</li>
               <li>Selecciona un recordatorio para tu tarea.</li>
-              <li>La modalidad 'Urgente' te permite priorizar tu tarea por sobre las demás, de forma que siempre estarás al pendiente de la misma.</li>
+              <li>
+                La modalidad 'Urgente' te permite priorizar tu tarea por sobre
+                las demás, de forma que siempre estarás al pendiente de la
+                misma.
+              </li>
               <li>
                 Puedes seleccionar un color a gusto a modo distintivo para tu
                 tarea.
               </li>
-              <li>¡Listo! Tu tarea esta creada. Ya puedes comenzar con tu organización.</li>
+              <li>
+                ¡Listo! Tu tarea esta creada. Ya puedes comenzar con tu
+                organización.
+              </li>
             </ol>
           </header>
           <img src={img1} alt="image2" className={`md:w-10/12 lg:w-5/12`} />
         </article>
 
-        <article id="fnUrgency"
+        <article
+          id="fnUrgency"
           className={`text-center flex flex-col items-center gap-16 py-14`}
         >
           <img src={img2} alt="image3" className={`w-96 lg:w-4/12`} />
           <header className={`lg:w-1/2`}>
-            <h1 className="text-4xl md:text-5xl pb-10 font-titles">Función Urgency</h1>
+            <h1 className="text-4xl md:text-5xl pb-10 font-titles">
+              Función Urgency
+            </h1>
             <p className="font-text text-xl">
               Ten siempre tus tareas urgentes organizadas. Gracias a la función
               'Urgency' solo tendrás una tarea urgente. Pero, ¿Por qué solo una?
               Porque así nunca perderás de vista tu tarea con mayor urgencia y
-              siempre estará a la vista en la sección 'Tarea Urgente'. Una vez que
-              completes tu tarea urgente, automáticamente la primera tarea que
-              creaste será la que
-              pasará a ser urgente, y así sucesivamente hasta completar todas
-              tus tareas.
+              siempre estará a la vista en la sección 'Tarea Urgente'. Una vez
+              que completes tu tarea urgente, automáticamente la primera tarea
+              que creaste será la que pasará a ser urgente, y así sucesivamente
+              hasta completar todas tus tareas.
             </p>
           </header>
         </article>
 
-        <article id="solution" className={`text-center lg:w-2/3 m-auto py-5 mt-14 mb-32 md:py-10`}>
+        <article
+          id="solution"
+          className={`text-center lg:w-2/3 m-auto py-5 mt-14 mb-32 md:py-10`}
+        >
           <h1 className="text-4xl md:text-5xl pb-10 font-titles">
             ¿Qué problemas soluciona Taskify?
           </h1>

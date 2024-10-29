@@ -127,49 +127,50 @@ const WorkSpace = () => {
 
         setInfo(updatedInfo);
 
-        console.log("RECORDATORIO ENVIADO!");
+        emailjs
+        .send("service_0jum38a", "template_w8rf65t", updatedInfo, {
+          publicKey: "zADAsfTnn9pOJcyPO",
+        })
+        .then(
+          async () => {
+            setInfo({ ...info, message: "" });
 
-        const mailSimulated = async () => {
-          try {
-            const completedTasks = tasksToComplete.map(async (task) => {
-              const { data } = await axiosURL.put(`/task/${task.id}`, {
-                completed: true,
-              });
-              return data;
+            // al enviar el correo se actualiza el task a completed true
+          const completedTasks = tasksToComplete.map((task) => {
+            axiosURL.put(`/task/${task.id}`, {
+              completed: true,
             });
-            const allTasksCompleted = await Promise.all(completedTasks);
-            setTaskToComplete(allTasksCompleted);
-            console.log(completedTasks);
-            setShowModal(true);
-          } catch (error) {
-            if (error instanceof Error) console.error(error);
-          }
+            setTaskToComplete([task]);
+          });
+          await Promise.all(completedTasks);
+          setShowModal(true);
+        },
+          (error) => {
+            console.log("FAILED...", error.text);
+            toast.error("Recordatorio no enviado");
+            }
+          );
 
-          // emailjs
-          // .send("service_0jum38a", "template_w8rf65t", updatedInfo, {
-          //   publicKey: "zADAsfTnn9pOJcyPO",
-          // })
-          // .then(
-          //   async () => {
-          //     setInfo({ ...info, message: "" });
+        // console.log("RECORDATORIO ENVIADO!");
 
-          //     // al enviar el correo se actualiza el task a completed true
-          //   const completedTasks = tasksToComplete.map((task) => {
-          //     axiosURL.put(`/task/${task.id}`, {
-          //       completed: true,
-          //     });
-          //     setTaskToComplete([task]);
-          //   });
-          //   await Promise.all(completedTasks);
-          //   setShowModal(true);
-          // },
-          //   (error) => {
-          //     console.log("FAILED...", error.text);
-          //     toast.error("Recordatorio no enviado");
-          //     }
-          //   );
-        };
-        mailSimulated();
+        // const mailSimulated = async () => {
+        //   try {
+        //     const completedTasks = tasksToComplete.map(async (task) => {
+        //       const { data } = await axiosURL.put(`/task/${task.id}`, {
+        //         completed: true,
+        //       });
+        //       return data;
+        //     });
+        //     const allTasksCompleted = await Promise.all(completedTasks);
+        //     setTaskToComplete(allTasksCompleted);
+        //     console.log(completedTasks);
+        //     setShowModal(true);
+        //   } catch (error) {
+        //     if (error instanceof Error) console.error(error);
+        //   }
+
+        // };
+        // mailSimulated();
       }
     }, 10000);
 
@@ -203,15 +204,6 @@ const WorkSpace = () => {
 
   //!Functions
   const handleDescription = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setTask({
-      ...task,
-      description: event.target.value,
-    });
-  };
-
-  const handleNewTaskSearchDescription = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
     setTask({
       ...task,
       description: event.target.value,
@@ -418,6 +410,8 @@ const WorkSpace = () => {
             onSubmit={handleSubmit}
             className="flex flex-col gap-10 md:gap-7 pt-5 h-96 items-center justify-center md:justify-around"
           >
+            <section className="w-4/5 md:w-full md:max-w-56 flex flex-col gap-3">
+            <p className="font-buttons text-center">Descripción:</p>
             <textarea
               name="description"
               id="description"
@@ -425,8 +419,9 @@ const WorkSpace = () => {
               rows={3}
               value={task.description}
               onChange={handleDescription}
-              className={`w-4/5 md:w-full md:max-w-56 border border-black dark:border-white rounded-xl text-black p-1 ${styles.textarea}`}
-            ></textarea>
+              className={`w-4/5 md:w-full md:max-w-56 max-h-52 overflow-y-auto border border-black dark:border-white rounded-xl text-black p-1 ${styles.textarea}`}
+              ></textarea>
+              </section>
             <div className="flex justify-around items-center gap-10 md:gap-0 w-4/6 md:w-full">
               <button
                 disabled={createTaskFromSearch}
