@@ -42,7 +42,7 @@ const ColorTask: React.FC<Props> = ({
 
   return (
     <main
-      className={`absolute flex flex-col gap-10 items-center m-auto inset-0 w-2/3 md:w-1/4 h-fit bg-gradient-to-tr from-amber-200 to-fuchsia-300 dark:bg-gradient-to-tr dark:from-amber-700 dark:via-black dark:to-violet-600 rounded-xl p-5 border border-black z-20 ${
+      className={`fixed flex flex-col gap-10 items-center m-auto inset-0 w-2/3 md:w-1/3 h-fit bg-gradient-to-tr from-amber-200 to-fuchsia-300 dark:bg-gradient-to-tr dark:from-amber-700 dark:via-black dark:to-violet-600 rounded-xl p-5 border border-black z-20 ${
         colorClose ? styles.close : styles.open
       }`}
     >
@@ -77,7 +77,7 @@ const ColorTask: React.FC<Props> = ({
           handleColorClose();
         }
         }
-        className="p-1 rounded-lg bg-lime-400 hover:bg-lime-500 dark:bg-green-800 dark:hover:bg-green-600 border-black dark:border-white border"
+        className="p-2 rounded-lg bg-lime-400 hover:bg-lime-300 dark:bg-purple-800 dark:hover:bg-purple-900 border-black dark:border-white border hover:shadow-sm hover:shadow-black dark:hover:shadow-white transition-colors font-buttons"
       >
         Aceptar
       </button>

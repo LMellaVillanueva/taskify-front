@@ -125,33 +125,31 @@ const WorkSpace = () => {
       ) {
         const updatedInfo = { ...info, message: taskNames };
 
-        setInfo(updatedInfo);
+        // emailjs
+        // .send("service_0jum38a", "template_w8rf65t", updatedInfo, {
+        //   publicKey: "zADAsfTnn9pOJcyPO",
+        // })
+        // .then(
+        //   async () => {
+        //     setInfo({ ...info, message: "" });
 
-        emailjs
-        .send("service_0jum38a", "template_w8rf65t", updatedInfo, {
-          publicKey: "zADAsfTnn9pOJcyPO",
-        })
-        .then(
-          async () => {
-            setInfo({ ...info, message: "" });
+        //     // al enviar el correo se actualiza el task a completed true
+        //   const completedTasks = tasksToComplete.map(async (task) => {
+        //     await axiosURL.put(`/task/${task.id}`, {
+        //       completed: true,
+        //     });
+        //     setTaskToComplete([task]);
+        //   });
+        //   await Promise.all(completedTasks);
+        //   setShowModal(true);
+        // },
+        //   (error) => {
+        //     console.log("FAILED...", error.text);
+        //     toast.error("Recordatorio no enviado");
+        //     }
+        //   );
 
-            // al enviar el correo se actualiza el task a completed true
-          const completedTasks = tasksToComplete.map((task) => {
-            axiosURL.put(`/task/${task.id}`, {
-              completed: true,
-            });
-            setTaskToComplete([task]);
-          });
-          await Promise.all(completedTasks);
-          setShowModal(true);
-        },
-          (error) => {
-            console.log("FAILED...", error.text);
-            toast.error("Recordatorio no enviado");
-            }
-          );
-
-        // console.log("RECORDATORIO ENVIADO!");
+        console.log("RECORDATORIO ENVIADO!");
 
         // const mailSimulated = async () => {
         //   try {
@@ -276,9 +274,7 @@ const WorkSpace = () => {
     }
   };
 
-  const handleSearch = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ): Promise<void> => {
+  const handleSearch = async (event: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
     let description = event.target.value;
     setDescriptionNotCreated(description);
     if (description.length) {
@@ -392,6 +388,12 @@ const WorkSpace = () => {
     importantTasks.length <= 0 &&
     urgencyTask.length <= 0;
 
+    const handleCloseSearchTask = async () => {
+      await dispatch(getTasksAPI());
+      setDescriptionNotCreated('');
+      setTask({...task, description: ''});
+    }
+
   return (
     <React.Fragment>
       <NavBar />
@@ -410,7 +412,7 @@ const WorkSpace = () => {
             onSubmit={handleSubmit}
             className="flex flex-col gap-10 md:gap-7 pt-5 h-96 items-center justify-center md:justify-around"
           >
-            <section className="w-4/5 md:w-full md:max-w-56 flex flex-col gap-3">
+            <section className="w-4/5 md:w-full md:max-w-56 flex flex-col gap-3 items-center">
             <p className="font-buttons text-center">Descripción:</p>
             <textarea
               name="description"
@@ -422,7 +424,7 @@ const WorkSpace = () => {
               className={`w-4/5 md:w-full md:max-w-56 max-h-52 overflow-y-auto border border-black dark:border-white rounded-xl text-black p-1 ${styles.textarea}`}
               ></textarea>
               </section>
-            <div className="flex justify-around items-center gap-10 md:gap-0 w-4/6 md:w-full">
+            <div className="flex justify-center md:justify-around p-5 md:p-0 items-center gap-10 md:gap-0 md:w-full">
               <button
                 disabled={createTaskFromSearch}
                 type="button"
@@ -467,7 +469,7 @@ const WorkSpace = () => {
         {/* Cambiar el color de la task */}
         {calendarOpen && (
             <div
-              className={`w-3/5 lg:w-2/5 h-fit lg:h-1/2 p-5 absolute inset-0 m-auto flex flex-col gap-10 bg-yellow-200 dark:bg-gradient-to-br dark:from-amber-600 dark:via-yellow-800 dark:to-amber-950 items-center border border-black rounded-xl z-20 text-black dark:text-white ${
+              className={`w-3/5 lg:w-2/5 h-fit lg:h-1/2 p-5 fixed inset-0 m-auto flex flex-col gap-10 bg-yellow-200 dark:bg-gradient-to-br dark:from-amber-600 dark:via-yellow-800 dark:to-amber-950 items-center border border-black rounded-xl z-20 text-black dark:text-white ${
                 calendarClose ? styles.close : styles.open
               }`}
             >
@@ -491,7 +493,7 @@ const WorkSpace = () => {
               </section>
               <button
                 type="button"
-                className="p-1 rounded-lg bg-amber-600 hover:bg-amber-700 border-black border font-buttons"
+                className="p-2 rounded-lg bg-lime-400 hover:bg-lime-300 dark:bg-purple-800 dark:hover:bg-purple-900 border-black dark:border-white border hover:shadow-sm hover:shadow-black dark:hover:shadow-white transition-colors font-buttons"
                 onClick={submitReminder}
               >
                 Aceptar
@@ -523,7 +525,7 @@ const WorkSpace = () => {
               onSubmit={handleSubmit}
               className="border border-black dark:border-white rounded-xl flex flex-col items-center justify-evenly p-3 h-80 animate-fade"
             >
-              <button type="button" onClick={() => {setDescriptionNotCreated(''); setTask({ ...task, description: "" });}}>
+              <button type="button" onClick={handleCloseSearchTask}>
                 <CloseIcon />
               </button>
               <h3 className="font-titles text-xl">
@@ -573,7 +575,7 @@ const WorkSpace = () => {
           <h1 className="text-center text-4xl lg:pb-8 font-titles">
             Mis Tareas
           </h1>
-          <article className="flex flex-col items-center md:items-start justify-center gap-16 md:flex-row md:gap-15 pt-5 p-10 lg:p-0">
+          <article className="flex flex-col items-center md:items-start justify-center gap-16 lg:gap-10 md:flex-row md:gap-15 pt-5 p-10 lg:p-0">
             <div className="text-center flex flex-col gap-2">
               <section className="flex items-center border border-black dark:border-white rounded-xl w-56 justify-center">
                 {urgencyTask.length > 0 ? (
@@ -603,11 +605,11 @@ const WorkSpace = () => {
                 <div className="text-center flex flex-col gap-2">
                   <article
                     key={task.id}
-                    className="flex flex-col items-center justify-around h-96 border border-black dark:border-white rounded-xl p-4 w-44 md:w-72 overflow-y-auto dark:text-black"
+                    className="flex flex-col items-center justify-around h-96 border border-black dark:border-white rounded-xl py-4 w-56 md:w-72 overflow-y-auto dark:text-black"
                   >
                     {importantTasks.length > 0 ? (
                       importantTasks.map((task) => (
-                        <main key={task.id}>
+                        <main key={task.id} className="w-full p-2 px-5 md:px-0 md:w-fit">
                           <ImportantTask task={task} />
                         </main>
                       ))

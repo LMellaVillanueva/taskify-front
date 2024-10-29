@@ -80,7 +80,7 @@ const BurguerMenu = () => {
         
         {open && (
           <section className={`fixed inset-0 flex flex-col items-center bg-gradient-to-br from-violet-700 via-purple-500 to-indigo-400 dark:text-white text-dark dark:bg-gradient-to-bl dark:from-violet-950 dark:to-purple-700 opacity-95 p-10 gap-8 text-xl ${close ? styles.close : styles.open}`}>
-            {user.length > 0 && <h3>Bienvenido/a de nuevo {user[0]?.name}!</h3>}
+            {user.length > 0 && <h3 className="text-center">Bienvenido/a de nuevo {user[0]?.name}!</h3>}
             <button onClick={handleClose} className="absolute right-0 top-0 p-3"><CloseIcon fontSize="large" className="animate-fade animate-delay-500"/></button>
 
 
@@ -98,10 +98,12 @@ const BurguerMenu = () => {
                 </li>
               </ul>
 
-              <form
+              {user.length === 0 ? (
+
+                <form
                 onSubmit={handleLogIn}
                 className={`flex flex-col items-center gap-5 text-black dark:text-white animate-fade-left animate-duration-1000 animate-delay-500`}
-              >
+                >
                 <div className={`flex flex-col items-start`}>
                   <label htmlFor="email">Email:</label>
                   <input
@@ -110,7 +112,7 @@ const BurguerMenu = () => {
                     onChange={handleChange}
                     value={userInfo.email}
                     className="rounded-xl border-2 border-black dark:border-white dark:bg-neutral-600"
-                  />
+                    />
                 </div>
                 <div className={`flex flex-col items-start`}>
                   <label htmlFor="password">Contraseña:</label>
@@ -120,7 +122,7 @@ const BurguerMenu = () => {
                     onChange={handleChange}
                     value={userInfo.password}
                     className="rounded-xl border-2 border-black dark:border-white dark:bg-neutral-600"
-                  />
+                    />
                 </div>
                   <button type="submit" className="my-2 p-2 rounded-lg bg-indigo-400 hover:bg-blue-500 dark:bg-indigo-900 dark:hover:bg-indigo-600 border-black dark:border-white border">
                     Iniciar sesión
@@ -135,6 +137,7 @@ const BurguerMenu = () => {
                     </Link>
                   </p>
               </form>
+                  ) : null}
             </div>
           </section>
         )}

@@ -44,7 +44,7 @@ const UrgencyTask: React.FC<Prop> = ({ task }) => {
         <div className="border border-black w-10/12 mx-auto"></div>
 
         {/* {today > reminderDate &&  */}
-        <p className="text-center text-">
+        <p className="text-center">
           {new Date(task?.reminder)
             .toLocaleString("es-ES", {
               weekday: "long",
@@ -52,9 +52,10 @@ const UrgencyTask: React.FC<Prop> = ({ task }) => {
               day: "numeric",
               hour: "2-digit",
               minute: "2-digit",
+              hour12: true,
             })
             .replace(/,/, "") 
-            .replace(/^\w/, (c) => c.toUpperCase())} hrs
+            .replace(/^\w/, (c) => c.toUpperCase())} 
         </p>
         {/* } */}
         <button
