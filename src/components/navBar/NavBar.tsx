@@ -12,6 +12,7 @@ const NavBar = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const user = useAppSelector((state) => state.User.user);
+  console.log(user)
 
   //Creación de cuentas
   const [userInfo, setUserInfo] = useState({
@@ -111,7 +112,7 @@ const NavBar = () => {
           <li className="hover:underline">
             <Link to={"/"}>Inicio</Link>
           </li>
-          {user.length == 0 ? (
+          {user.length === 0 ? (
             <div>
               <li className="hover:underline">
                 <Link to={"/crearCuenta"}>Creación</Link>
