@@ -125,50 +125,31 @@ const WorkSpace = () => {
       ) {
         const updatedInfo = { ...info, message: taskNames };
 
-        // emailjs
-        // .send("service_0jum38a", "template_w8rf65t", updatedInfo, {
-        //   publicKey: "zADAsfTnn9pOJcyPO",
-        // })
-        // .then(
-        //   async () => {
-        //     setInfo({ ...info, message: "" });
+        emailjs
+          .send("service_0jum38a", "template_w8rf65t", updatedInfo, {
+            publicKey: "zADAsfTnn9pOJcyPO",
+          })
+          .then(
+            async () => {
+              setInfo({ ...info, message: "" });
 
-        //     // al enviar el correo se actualiza el task a completed true
-        //   const completedTasks = tasksToComplete.map(async (task) => {
-        //     await axiosURL.put(`/task/${task.id}`, {
-        //       completed: true,
-        //     });
-        //     setTaskToComplete([task]);
-        //   });
-        //   await Promise.all(completedTasks);
-        //   setShowModal(true);
-        // },
-        //   (error) => {
-        //     console.log("FAILED...", error.text);
-        //     toast.error("Recordatorio no enviado");
-        //     }
-        //   );
-
-        console.log("RECORDATORIO ENVIADO!");
-
-        // const mailSimulated = async () => {
-        //   try {
-        //     const completedTasks = tasksToComplete.map(async (task) => {
-        //       const { data } = await axiosURL.put(`/task/${task.id}`, {
-        //         completed: true,
-        //       });
-        //       return data;
-        //     });
-        //     const allTasksCompleted = await Promise.all(completedTasks);
-        //     setTaskToComplete(allTasksCompleted);
-        //     console.log(completedTasks);
-        //     setShowModal(true);
-        //   } catch (error) {
-        //     if (error instanceof Error) console.error(error);
-        //   }
-
-        // };
-        // mailSimulated();
+              // al enviar el correo se actualiza el task a completed true
+              const completedTasks = tasksToComplete.map(async (task) => {
+                const { data } = await axiosURL.put(`/task/${task.id}`, {
+                  completed: true,
+                });
+                return data;
+              });
+              const allTasksCompleted = await Promise.all(completedTasks);
+              setTaskToComplete(allTasksCompleted);
+              console.log(completedTasks);
+              setShowModal(true);
+            },
+            (error) => {
+              console.log("FAILED...", error.text);
+              toast.error("Recordatorio no enviado");
+            }
+          );
       }
     }, 10000);
 
@@ -274,7 +255,9 @@ const WorkSpace = () => {
     }
   };
 
-  const handleSearch = async (event: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+  const handleSearch = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ): Promise<void> => {
     let description = event.target.value;
     setDescriptionNotCreated(description);
     if (description.length) {
@@ -388,11 +371,11 @@ const WorkSpace = () => {
     importantTasks.length <= 0 &&
     urgencyTask.length <= 0;
 
-    const handleCloseSearchTask = async () => {
-      await dispatch(getTasksAPI());
-      setDescriptionNotCreated('');
-      setTask({...task, description: ''});
-    }
+  const handleCloseSearchTask = async () => {
+    await dispatch(getTasksAPI());
+    setDescriptionNotCreated("");
+    setTask({ ...task, description: "" });
+  };
 
   return (
     <React.Fragment>
@@ -413,17 +396,17 @@ const WorkSpace = () => {
             className="flex flex-col gap-10 md:gap-7 pt-5 h-96 items-center justify-center md:justify-around"
           >
             <section className="w-4/5 md:w-full md:max-w-56 flex flex-col gap-3 items-center">
-            <p className="font-buttons text-center">Descripción:</p>
-            <textarea
-              name="description"
-              id="description"
-              cols={50}
-              rows={3}
-              value={task.description}
-              onChange={handleDescription}
-              className={`w-4/5 md:w-full md:max-w-56 max-h-52 overflow-y-auto border border-black dark:border-white rounded-xl text-black p-1 ${styles.textarea}`}
+              <p className="font-buttons text-center">Descripción:</p>
+              <textarea
+                name="description"
+                id="description"
+                cols={50}
+                rows={3}
+                value={task.description}
+                onChange={handleDescription}
+                className={`w-4/5 md:w-full md:max-w-56 max-h-52 overflow-y-auto border border-black dark:border-white rounded-xl text-black p-1 ${styles.textarea}`}
               ></textarea>
-              </section>
+            </section>
             <div className="flex justify-center md:justify-around p-5 md:p-0 items-center gap-10 md:gap-0 md:w-full">
               <button
                 disabled={createTaskFromSearch}
@@ -468,37 +451,41 @@ const WorkSpace = () => {
 
         {/* Cambiar el color de la task */}
         {calendarOpen && (
-            <div
-              className={`w-3/5 lg:w-2/5 h-fit lg:h-1/2 p-5 fixed inset-0 m-auto flex flex-col gap-10 bg-yellow-200 dark:bg-gradient-to-br dark:from-amber-600 dark:via-yellow-800 dark:to-amber-950 items-center border border-black rounded-xl z-20 text-black dark:text-white ${
-                calendarClose ? styles.close : styles.open
-              }`}
-            >
-              <button type="button" onClick={handleCalendarClose}>
-                <CloseIcon />
-              </button>
-              <section className="flex flex-col items-center ">
-                <p className="font-buttons">Selecciona una fecha:</p>
-                <DatePicker
-                  dateFormat="dd/MM/yyyy"
-                  selected={reminder}
-                  onChange={handleDateReminder}
-                  todayButton="Hoy"
-                  className="rounded-xl text-black p-0.5"
-                />
-              </section>
+          <div
+            className={`w-3/5 lg:w-2/5 h-fit lg:h-1/2 p-5 fixed inset-0 m-auto flex flex-col gap-10 bg-yellow-200 dark:bg-gradient-to-br dark:from-amber-600 dark:via-yellow-800 dark:to-amber-950 items-center border border-black rounded-xl z-20 text-black dark:text-white ${
+              calendarClose ? styles.close : styles.open
+            }`}
+          >
+            <button type="button" onClick={handleCalendarClose}>
+              <CloseIcon />
+            </button>
+            <section className="flex flex-col items-center ">
+              <p className="font-buttons">Selecciona una fecha:</p>
+              <DatePicker
+                dateFormat="dd/MM/yyyy"
+                selected={reminder}
+                onChange={handleDateReminder}
+                todayButton="Hoy"
+                className="rounded-xl text-black p-0.5"
+              />
+            </section>
 
-              <section className="flex flex-col items-center ">
-                <p className="font-buttons">Selecciona una hora:</p>
-                <input type="time" onChange={handleHour} className="rounded-xl text-black p-0.5" />
-              </section>
-              <button
-                type="button"
-                className="p-2 rounded-lg bg-lime-400 hover:bg-lime-300 dark:bg-purple-800 dark:hover:bg-purple-900 border-black dark:border-white border hover:shadow-sm hover:shadow-black dark:hover:shadow-white transition-colors font-buttons"
-                onClick={submitReminder}
-              >
-                Aceptar
-              </button>
-            </div>
+            <section className="flex flex-col items-center ">
+              <p className="font-buttons">Selecciona una hora:</p>
+              <input
+                type="time"
+                onChange={handleHour}
+                className="rounded-xl text-black p-0.5"
+              />
+            </section>
+            <button
+              type="button"
+              className="p-2 rounded-lg bg-lime-400 hover:bg-lime-300 dark:bg-purple-800 dark:hover:bg-purple-900 border-black dark:border-white border hover:shadow-sm hover:shadow-black dark:hover:shadow-white transition-colors font-buttons"
+              onClick={submitReminder}
+            >
+              Aceptar
+            </button>
+          </div>
         )}
 
         {colorOpen && (
@@ -609,7 +596,10 @@ const WorkSpace = () => {
                   >
                     {importantTasks.length > 0 ? (
                       importantTasks.map((task) => (
-                        <main key={task.id} className="w-full p-2 px-5 md:px-0 md:w-fit">
+                        <main
+                          key={task.id}
+                          className="w-full p-2 px-5 md:px-0 md:w-fit"
+                        >
                           <ImportantTask task={task} />
                         </main>
                       ))

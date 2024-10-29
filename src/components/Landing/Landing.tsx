@@ -116,8 +116,7 @@ const Landing = () => {
           id="fnUrgency"
           className={`text-center flex flex-col items-center gap-16 py-14`}
         >
-          <img src={img2} alt="image3" className={`w-96 lg:w-4/12`} />
-          <header className={`lg:w-1/2`}>
+          <header className={`lg:w-2/3`}>
             <h1 className="text-4xl md:text-5xl pb-10 font-titles">
               Función Urgency
             </h1>
@@ -131,6 +130,7 @@ const Landing = () => {
               hasta completar todas tus tareas.
             </p>
           </header>
+          <img src={img2} alt="image3" className={`w-96 lg:w-4/12`} />
         </article>
 
         <article
