@@ -125,9 +125,17 @@ const BurguerMenu = () => {
                 <li className="animate-fade-left animate-duration-300 animate-delay-500 hover:underline">
                   <Link to={"/"}>Inicio</Link>
                 </li>
-                <li className="animate-fade-left animate-duration-500 animate-delay-500 hover:underline">
-                  <Link to={"/workSpace"}>Creación</Link>
-                </li>
+                {user.length === 0 ? (
+            <div>
+              <li className="animate-fade-left animate-duration-500 animate-delay-500 hover:underline">
+                <Link to={"/crearCuenta"}>Creación</Link>
+              </li>
+            </div>
+          ) : (
+            <li className="animate-fade-left animate-duration-500 animate-delay-500 hover:underline">
+              <Link to={"/workSpace"}>Creación</Link>
+            </li>
+          )}
                 <li className="animate-fade-left animate-duration-7000 animate-delay-500">
                   <button
                     onClick={() => {
